@@ -1,0 +1,196 @@
+#include "RenderManager.h"
+
+#pragma comment(lib, "d3d11.lib")
+
+#include "Mesh.h"
+
+#include "Shaders/VS_Default.h"
+#include "Shaders/PS_Default.h"
+
+RenderManager* RenderManager::Instance = nullptr;
+
+RenderManager* RenderManager::Get()
+{
+	return Instance;
+}
+
+RenderManager* RenderManager::Initialize(HWND hWnd)
+{
+	// If and instance already exists, return null pointer to signify that the initialization failed due to it already being initialized
+	if (Instance)
+	{
+		return nullptr;
+	}
+
+	Instance = new RenderManager(hWnd);
+	return Instance;
+}
+
+RenderManager::RenderManager(HWND hWnd)
+{
+	// Attach D3D11 to window
+	RECT WndRect;
+	GetClientRect(hWnd, &WndRect);
+
+	// Swap Chain
+	D3D_FEATURE_LEVEL DxFeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	DXGI_SWAP_CHAIN_DESC DxSwapChainDes;
+	ZeroMemory(&DxSwapChainDes, sizeof(DXGI_SWAP_CHAIN_DESC));
+	DxSwapChainDes.BufferCount = 2; // Set from 1 to 2 to support DXGI_SWAP_EFFECT_DISCARD
+	DxSwapChainDes.OutputWindow = hWnd;
+	DxSwapChainDes.Windowed = true;
+	DxSwapChainDes.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // Upgraded version of DXGI_SWAP_EFFECT_DISCARD
+	DxSwapChainDes.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	DxSwapChainDes.BufferDesc.Width = WndRect.right - WndRect.left;
+	DxSwapChainDes.BufferDesc.Height = WndRect.bottom - WndRect.top;
+	DxSwapChainDes.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	DxSwapChainDes.SampleDesc.Count = 1; // Would need to be changed for anti aliasing
+
+	HRESULT Hr;
+	Hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG/* Need to change this when not debugging*/, &DxFeatureLevel, 1, D3D11_SDK_VERSION, &DxSwapChainDes, &DxSwapChain, &DxDevice, NULL, &DxDeviceContext);
+
+	// Render Target View
+	ID3D11Resource* BackBuffer;
+	Hr = DxSwapChain->GetBuffer(0, __uuidof(BackBuffer), (void**)&BackBuffer);
+	if (BackBuffer)
+	{
+		Hr = DxDevice->CreateRenderTargetView(BackBuffer, NULL, &DxRenderTargetView);
+		BackBuffer->Release();
+	}
+
+	// View Port
+	DxViewport.Width = (float)DxSwapChainDes.BufferDesc.Width;
+	DxViewport.Height = (float)DxSwapChainDes.BufferDesc.Height;
+	DxViewport.TopLeftX = DxViewport.TopLeftY = 0;
+	DxViewport.MinDepth = 0;
+	DxViewport.MaxDepth = 1;
+
+	// Shaders
+	//	Default 2D
+	Default2DVertexShader.ByteCode = VS_Default;
+	Default2DVertexShader.ByteCodeSize = sizeof(VS_Default);
+	Hr = DxDevice->CreateVertexShader(VS_Default, sizeof(VS_Default), NULL, &Default2DVertexShader.Shader);
+	Default2DPixelShader.ByteCode = PS_Default;
+	Default2DPixelShader.ByteCodeSize = sizeof(PS_Default);
+	Hr = DxDevice->CreatePixelShader(PS_Default, sizeof(PS_Default), NULL, &Default2DPixelShader.Shader);
+
+	// Debug Rendering
+	/* Currently using default things since the structs are the same as of now, 
+	 but this will likely need to be changed in the future as more things are added to the default vertex */
+
+	//	Input layout
+	D3D11_INPUT_ELEMENT_DESC InputDesc[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 8 /* POS is 8 bytes because it is 2 floats. So color has an offset of 8 */, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	Hr = DxDevice->CreateInputLayout(InputDesc, 2/* Num elements in InputDesc */, VS_Default, sizeof(VS_Default), &DebugInputLayout);
+
+	//	Vertex Buffer
+	D3D11_BUFFER_DESC BufferDesc;
+	ZeroMemory(&BufferDesc, sizeof(BufferDesc));
+	BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	BufferDesc.ByteWidth = sizeof(DebugVertex2D) * MAX_LINE_VERTS;
+	BufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	BufferDesc.CPUAccessFlags = 0;
+
+	Hr = DxDevice->CreateBuffer(&BufferDesc, NULL, &DebugVertexBuffer);
+
+	//	Shaders
+	Debug2DVertexShader = Default2DVertexShader.Shader;
+	Debug2DPixelShader = Default2DPixelShader.Shader;
+
+}
+
+void RenderManager::SafeRelease(IUnknown* OjbectToRelease)
+{
+	if (OjbectToRelease)
+	{
+		OjbectToRelease->Release();
+	}
+}
+
+RenderManager::~RenderManager()
+{
+	SafeRelease(DxDevice);
+	SafeRelease(DxDeviceContext);
+	SafeRelease(DxSwapChain);
+	SafeRelease(DxRenderTargetView);
+	SafeRelease(Default2DVertexShader.Shader);
+	SafeRelease(Default2DPixelShader.Shader);
+	SafeRelease(DebugInputLayout);
+	SafeRelease(DebugVertexBuffer);
+}
+
+void RenderManager::PreRender()
+{
+	float BackColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	DxDeviceContext->ClearRenderTargetView(DxRenderTargetView, BackColor);
+
+	// Output manager
+	ID3D11RenderTargetView* TempRTVs[] = { DxRenderTargetView };
+	DxDeviceContext->OMSetRenderTargets(1, TempRTVs, NULL /* Will probably need to set the depth stencil here eventually */);
+
+	// Rasterizer
+	DxDeviceContext->RSSetViewports(1, &DxViewport);
+}
+
+void RenderManager::RenderMesh(RMesh* Mesh)
+{
+	// Input Assembler
+	DxDeviceContext->IASetInputLayout(Mesh->InputLayout);
+	ID3D11Buffer* TempVertexBuffers[] = { Mesh->VertexBuffer };
+	UINT TempStrides[] = { sizeof(Vertex2D) };
+	UINT TempOffsets[] = { 0 };
+	DxDeviceContext->IASetVertexBuffers(0, 1, TempVertexBuffers, TempStrides, TempOffsets);
+	DxDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Vertex Shader
+	DxDeviceContext->VSSetShader(Mesh->VertexShader->Shader, 0, 0);
+
+	// Pixel Shader
+	DxDeviceContext->PSSetShader(Mesh->PixelShader->Shader, 0, 0);
+
+	// Draw
+	DxDeviceContext->Draw(Mesh->Verticies.size(), 0);
+}
+
+void RenderManager::DrawDebugLine(const Vector2& PointA, const Vector2& PointB, const Vector4& Color)
+{
+	if (DebugVertCount + 1 < MAX_LINE_VERTS)
+	{
+		DebugLineVerts[DebugVertCount] = DebugVertex2D(PointA, Color);
+		DebugLineVerts[DebugVertCount + 1] = DebugVertex2D(PointB, Color);
+		DebugVertCount += 2;
+	}
+}
+
+void RenderManager::RenderDebugLines()
+{
+	DxDeviceContext->IASetInputLayout(DebugInputLayout);
+
+	DxDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+	DxDeviceContext->UpdateSubresource(DebugVertexBuffer, 0, NULL, DebugLineVerts.data(), 0, 0);
+
+	UINT Strides[] = { sizeof(DebugVertex2D) };
+	UINT Offsets[] = { 0 };
+	DxDeviceContext->IASetVertexBuffers(0, 1, &DebugVertexBuffer, Strides, Offsets);
+
+	DxDeviceContext->VSSetShader(Debug2DVertexShader, nullptr, 0);
+	DxDeviceContext->PSSetShader(Debug2DPixelShader, nullptr, 0);
+
+	DxDeviceContext->Draw((UINT)DebugVertCount, 0);
+
+	// Clear the drawn lines
+	DebugVertCount = 0;
+}
+
+void RenderManager::PresentRender()
+{
+	RenderDebugLines();
+
+	// Can limit frame rate here
+	DxSwapChain->Present(0, 0);
+}
