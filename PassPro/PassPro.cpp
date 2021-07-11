@@ -78,7 +78,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         // Make Debug Lines
-        Matrix2D DebugMatrix(Vector2(cosf(PositionVal), sinf(PositionVal)), Rotation);
+        Matrix2D DebugMatrix(Vector2(cosf(PositionVal) * 0.5f, sinf(PositionVal) * 0.5f), Rotation);
         Vector2 XAxis(DebugMatrix.M[0][0], DebugMatrix.M[0][1]);
         Vector2 YAxis(DebugMatrix.M[1][0], DebugMatrix.M[1][1]);
         Vector2 Position(DebugMatrix.M[0][2], DebugMatrix.M[1][2]);
@@ -86,6 +86,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         YAxis = YAxis + Position;
         Renderer->DrawDebugLine(Position, XAxis, Vector4(1.f, 1.f, 1.f, 1.f));
         Renderer->DrawDebugLine(Position, YAxis, Vector4(1.f, 1.f, 1.f, 1.f));
+
+        Vector2 LocalVector1(0.25f, 0.25f);
+        Vector2 GlobalVector1 = DebugMatrix * LocalVector1;
+        Vector2 LocalVector2(0.5f, 0.5f);
+        Vector2 GlobalVector2 = DebugMatrix * LocalVector2;
+
+        Renderer->DrawDebugLine(GlobalVector1, GlobalVector2, Vector4(0.f, 1.f, 0.f, 1.f));
 
         Rotation += 0.01f;
         PositionVal += 0.01f;

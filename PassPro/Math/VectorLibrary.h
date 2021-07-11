@@ -59,4 +59,11 @@ struct Matrix2D
 		:	_11(cosf(RotationAngle)), _12(-sinf(RotationAngle)), _13(Position.X),
 			_21(sinf(RotationAngle)), _22( cosf(RotationAngle)), _23(Position.Y),
 			_31(0.f), _32(0.f), _33(1.f) {}
+
+	Vector2 operator*(const Vector2& Rhs) 
+	{ 
+		const float X = (_21 * Rhs.X) + (_22 * Rhs.Y) +_13;
+		const float Y = (_11 * Rhs.X) + (_12 * Rhs.Y) +_23;
+		return Vector2(X, Y); 
+	}
 };
