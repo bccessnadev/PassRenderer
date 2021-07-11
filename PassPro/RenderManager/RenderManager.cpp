@@ -3,9 +3,11 @@
 #pragma comment(lib, "d3d11.lib")
 
 #include "Mesh.h"
+#include <DirectXMath.h>
 
 #include "Shaders/VS_Default.h"
 #include "Shaders/PS_Default.h"
+#include "Shaders/VS_Debug2D.h"
 
 RenderManager* RenderManager::Instance = nullptr;
 
@@ -97,8 +99,18 @@ RenderManager::RenderManager(HWND hWnd)
 
 	Hr = DxDevice->CreateBuffer(&BufferDesc, NULL, &DebugVertexBuffer);
 
+	// Constant Buffer
+	D3D11_BUFFER_DESC CBuffDesc;
+	ZeroMemory(&CBuffDesc, sizeof(CBuffDesc));
+	CBuffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	CBuffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	CBuffDesc.Usage = D3D11_USAGE_DYNAMIC;
+
+	CBuffDesc.ByteWidth = sizeof(DirectX::XMMATRIX); // Needs to be multiple of 16, so I can't use the Transform2D
+	Hr = DxDevice->CreateBuffer(&CBuffDesc, 0, &Transform2D_CBuff);
+
 	//	Shaders
-	Debug2DVertexShader = Default2DVertexShader.Shader;
+	Hr = DxDevice->CreateVertexShader(VS_Debug2D, sizeof(VS_Debug2D), NULL, &Debug2DVertexShader);
 	Debug2DPixelShader = Default2DPixelShader.Shader;
 
 }
@@ -119,7 +131,9 @@ RenderManager::~RenderManager()
 	SafeRelease(DxRenderTargetView);
 	SafeRelease(Default2DVertexShader.Shader);
 	SafeRelease(Default2DPixelShader.Shader);
+	SafeRelease(Transform2D_CBuff);
 	SafeRelease(DebugInputLayout);
+	SafeRelease(Debug2DVertexShader);
 	SafeRelease(DebugVertexBuffer);
 }
 
@@ -136,7 +150,7 @@ void RenderManager::PreRender()
 	DxDeviceContext->RSSetViewports(1, &DxViewport);
 }
 
-void RenderManager::RenderMesh(RMesh* Mesh)
+void RenderManager::RenderMesh(RMesh* Mesh, const Transform2D& MeshTransform)
 {
 	// Input Assembler
 	DxDeviceContext->IASetInputLayout(Mesh->InputLayout);
@@ -148,6 +162,22 @@ void RenderManager::RenderMesh(RMesh* Mesh)
 
 	// Vertex Shader
 	DxDeviceContext->VSSetShader(Mesh->VertexShader->Shader, 0, 0);
+
+	//	Send Transform to the GPU
+	//		Have to do this weird way of getting the 3x3 matrix to the GPU due to how the GPU like to space memory
+	Matrix2D MeshMatrix = MeshTransform.Matrix;
+	DirectX::XMMATRIX DXTransformMatrix(
+		MeshMatrix._11, MeshMatrix._12, MeshMatrix._13, 0.f, 
+		MeshMatrix._21, MeshMatrix._22, MeshMatrix._23, 0.f,
+		MeshMatrix._31, MeshMatrix._32, MeshMatrix._33, 0.f, 
+		0.f, 0.f, 0.f, 0.f);
+
+	D3D11_MAPPED_SUBRESOURCE GPUBuffer;
+	DxDeviceContext->Map(Transform2D_CBuff, 0, D3D11_MAP_WRITE_DISCARD, 0, &GPUBuffer);
+	memcpy(GPUBuffer.pData, &DXTransformMatrix, sizeof(DirectX::XMMATRIX));
+	DxDeviceContext->Unmap(Transform2D_CBuff, 0);
+
+	DxDeviceContext->VSSetConstantBuffers(0, 1, &Transform2D_CBuff);
 
 	// Pixel Shader
 	DxDeviceContext->PSSetShader(Mesh->PixelShader->Shader, 0, 0);

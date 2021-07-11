@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <memory.h>
 
 struct Vector2
 {
@@ -55,15 +56,10 @@ struct Matrix2D
 			_21(0.f), _22(1.f), _23(0.f),
 			_31(0.f), _32(0.f), _33(1.f) {}
 
-	Matrix2D(Vector2 Position, float RotationAngle)
-		:	_11(cosf(RotationAngle)), _12(-sinf(RotationAngle)), _13(Position.X),
-			_21(sinf(RotationAngle)), _22( cosf(RotationAngle)), _23(Position.Y),
-			_31(0.f), _32(0.f), _33(1.f) {}
-
 	Vector2 operator*(const Vector2& Rhs) 
 	{ 
-		const float X = (_21 * Rhs.X) + (_22 * Rhs.Y) +_13;
-		const float Y = (_11 * Rhs.X) + (_12 * Rhs.Y) +_23;
+		const float X = (_11 * Rhs.X) + (_12 * Rhs.Y) +_13;
+		const float Y = (_21 * Rhs.X) + (_22 * Rhs.Y) +_23;
 		return Vector2(X, Y); 
 	}
 };

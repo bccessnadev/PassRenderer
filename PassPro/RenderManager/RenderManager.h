@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <array>
 #include "../Math/VectorLibrary.h"
+#include "../Math/Transform.h"
 
 struct TShader
 {
@@ -82,7 +83,7 @@ public:
 	TVertexShader* GetDefault2DVertexShader() { return &Default2DVertexShader; };
 	TPixelShader* GetDefault2DPixelShader() { return &Default2DPixelShader; };
 
-	void RenderMesh(class RMesh* Mesh);
+	void RenderMesh(class RMesh* Mesh, const Transform2D& MeshTransform);
 
 	void DrawDebugLine(const Vector2& PointA, const Vector2& PointB, const Vector4& Color);
 	
@@ -99,6 +100,9 @@ protected:
 
 	TVertexShader Default2DVertexShader;
 	TPixelShader Default2DPixelShader;
+
+	/* Constant buffer that holds the 2D transform matrix for the current shape that is being drawn*/
+	ID3D11Buffer* Transform2D_CBuff;
 
 	// Debug Rendering
 	ID3D11InputLayout* DebugInputLayout = nullptr;

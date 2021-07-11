@@ -16,7 +16,7 @@ public:
 								 GETTERS
 	*****************************************************************/
 
-	inline Object* GetGameObject() { return Parent; }
+	inline Object* GetOwner() { return Parent; }
 	inline bool GetIsEnabled() { return IsEnabled; }
 
 	/*****************************************************************

@@ -53,7 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RenderManager* Renderer = RenderManager::Get();
     ObjectManager* World = new ObjectManager();
 
-    Object* TriangleObject = new Object();
+    Object2D* TriangleObject = new Object2D();
     CRenderingComponent* TriangleRenderComponent = new CRenderingComponent(TriangleObject, RMesh::Triangle({ 0.f, 0.5f }, { 0.5f, -0.5f }, { -0.5f, -0.5f }, {1.f, 0.f, 0.f, 1.f}));
     TriangleObject->AddComponent(TriangleRenderComponent);
     World->AddObject(TriangleObject);
@@ -77,11 +77,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         }
 
+        TriangleObject->Transform.SetRotation(Rotation);
+        TriangleObject->Transform.SetPosition(Vector2(cosf(PositionVal) * 0.5f, sinf(PositionVal) * 0.5f));
+
+        Rotation += 0.01f;
+        PositionVal += 0.01f;
+
         // Make Debug Lines
-        Matrix2D DebugMatrix(Vector2(cosf(PositionVal) * 0.5f, sinf(PositionVal) * 0.5f), Rotation);
-        Vector2 XAxis(DebugMatrix.M[0][0], DebugMatrix.M[0][1]);
-        Vector2 YAxis(DebugMatrix.M[1][0], DebugMatrix.M[1][1]);
-        Vector2 Position(DebugMatrix.M[0][2], DebugMatrix.M[1][2]);
+        Matrix2D DebugMatrix = TriangleObject->Transform.Matrix;
+        Vector2 XAxis(DebugMatrix._11, DebugMatrix._21);
+        Vector2 YAxis(DebugMatrix._12, DebugMatrix._22);
+        Vector2 Position(DebugMatrix._13, DebugMatrix._23);
         XAxis = XAxis + Position;
         YAxis = YAxis + Position;
         Renderer->DrawDebugLine(Position, XAxis, Vector4(1.f, 1.f, 1.f, 1.f));
@@ -93,9 +99,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         Vector2 GlobalVector2 = DebugMatrix * LocalVector2;
 
         Renderer->DrawDebugLine(GlobalVector1, GlobalVector2, Vector4(0.f, 1.f, 0.f, 1.f));
-
-        Rotation += 0.01f;
-        PositionVal += 0.01f;
 
         World->Update();
         Renderer->PreRender();

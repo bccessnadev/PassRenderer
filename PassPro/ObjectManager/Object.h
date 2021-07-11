@@ -3,7 +3,7 @@
 #include <string>
 
 #include "../Components/Component.h"
-//#include "Transform.h"
+#include "../Math/Transform.h"
 
 class ObjectManager;
 
@@ -102,4 +102,11 @@ private:
 	std::vector<IComponent*> Components;
 	bool bIsActive = true;
 
+};
+
+class Object2D : public Object
+{
+public:
+	Object2D() {}
+	Transform2D Transform;
 };

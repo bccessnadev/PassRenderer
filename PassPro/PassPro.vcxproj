@@ -166,6 +166,7 @@
     <ClInclude Include="Components\Component.h" />
     <ClInclude Include="Components\RenderingComponent.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Math\Transform.h" />
     <ClInclude Include="Math\VectorLibrary.h" />
     <ClInclude Include="ObjectManager\Object.h" />
     <ClInclude Include="ObjectManager\ObjectManager.h" />
@@ -177,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\RenderingComponent.cpp" />
+    <ClCompile Include="Math\Transform.cpp" />
     <ClCompile Include="ObjectManager\Object.cpp" />
     <ClCompile Include="ObjectManager\ObjectManager.cpp" />
     <ClCompile Include="PassPro.cpp" />
@@ -196,6 +198,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="RenderManager\Shaders\VS_Debug2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="RenderManager\Shaders\VS_Default.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
