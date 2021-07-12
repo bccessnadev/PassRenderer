@@ -11,5 +11,6 @@ public:
 
 	void SetPosition(const Vector2 Position);
 	void SetRotation(const float RotationInRads);
+	Vector2 GetScale();
 	void SetScale(const Vector2 Scale);
 };

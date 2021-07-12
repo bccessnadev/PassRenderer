@@ -175,10 +175,12 @@
     <ClInclude Include="RenderManager\RenderManager.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="WorldSize.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\RenderingComponent.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
+    <ClCompile Include="Math\VectorLibrary.cpp" />
     <ClCompile Include="ObjectManager\Object.cpp" />
     <ClCompile Include="ObjectManager\ObjectManager.cpp" />
     <ClCompile Include="PassPro.cpp" />

@@ -6,13 +6,12 @@
 
 #include "RenderManager/RenderManager.h"
 #include "ObjectManager/ObjectManager.h"
+#include "WorldSize.h"
 
 #include "ObjectManager/Object.h"
 #include "Components/RenderingComponent.h"
 
 #define MAX_LOADSTRING 100
-#define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 1000
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -53,13 +52,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     RenderManager* Renderer = RenderManager::Get();
     ObjectManager* World = new ObjectManager();
 
-    Object2D* TriangleObject = new Object2D();
+    Object2D* TriangleObject = new Object2D(Vector2(), 0.f, Vector2(5.f, 5.f));
     CRenderingComponent* TriangleRenderComponent = new CRenderingComponent(TriangleObject, RMesh::Triangle({ 0.f, 0.5f }, { 0.5f, -0.5f }, { -0.5f, -0.5f }, {1.f, 0.f, 0.f, 1.f}));
     TriangleObject->AddComponent(TriangleRenderComponent);
     World->AddObject(TriangleObject);
 
     float Rotation = 0.f;
     float PositionVal = 0.f;
+    float ScaleVal = 0.f;
 
     // Main message loop:
     while (true) // Want rt update loop, not wait for message // GetMessage(&msg, nullptr, 0, 0))
@@ -78,10 +78,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 
         TriangleObject->Transform.SetRotation(Rotation);
-        TriangleObject->Transform.SetPosition(Vector2(cosf(PositionVal) * 0.5f, sinf(PositionVal) * 0.5f));
+        TriangleObject->Transform.SetPosition(Vector2(cosf(PositionVal) * 25.0f, sinf(PositionVal) * 25.0f));
+        TriangleObject->Transform.SetScale(Vector2((cosf(ScaleVal) + 1.5f) * 2.5f, (sinf(ScaleVal) + 1.5f)) * 2.5f);
 
         Rotation += 0.01f;
         PositionVal += 0.01f;
+        ScaleVal += 0.01f;
 
         // Make Debug Lines
         Matrix2D DebugMatrix = TriangleObject->Transform.Matrix;
@@ -93,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         Renderer->DrawDebugLine(Position, XAxis, Vector4(1.f, 1.f, 1.f, 1.f));
         Renderer->DrawDebugLine(Position, YAxis, Vector4(1.f, 1.f, 1.f, 1.f));
 
-        Vector2 LocalVector1(0.25f, 0.25f);
+        Vector2 LocalVector1(0.25f, 0.4f);
         Vector2 GlobalVector1 = DebugMatrix * LocalVector1;
         Vector2 LocalVector2(0.5f, 0.5f);
         Vector2 GlobalVector2 = DebugMatrix * LocalVector2;
@@ -155,7 +157,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, WINDOW_WIDTH, WINDOW_HEIGHT, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, ScreenWidth, ScreenHeight, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
