@@ -4,12 +4,11 @@
 #include "framework.h"
 #include "PassPro.h"
 
-#include "RenderManager/RenderManager.h"
-#include "ObjectManager/ObjectManager.h"
 #include "WorldSize.h"
 
-#include "ObjectManager/Object.h"
-#include "Components/RenderingComponent.h"
+#include "RenderManager\RenderManager.h"
+#include "Levels\PlaygroundLevel.h"
+#include "ObjectManager\LevelManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -49,17 +48,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-    RenderManager* Renderer = RenderManager::Get();
-    ObjectManager* World = new ObjectManager();
-
-    Object2D* TriangleObject = new Object2D(Vector2(), 0.f, Vector2(5.f, 5.f));
-    CRenderingComponent* TriangleRenderComponent = new CRenderingComponent(TriangleObject, RMesh::Triangle({ 0.f, 0.5f }, { 0.5f, -0.5f }, { -0.5f, -0.5f }, {1.f, 0.f, 0.f, 1.f}));
-    TriangleObject->AddComponent(TriangleRenderComponent);
-    World->AddObject(TriangleObject);
-
-    float Rotation = 0.f;
-    float PositionVal = 0.f;
-    float ScaleVal = 0.f;
+    PlaygroundLevel* Playground = new PlaygroundLevel();
+    LevelManager* PlaygroundManager = new LevelManager(Playground);
 
     // Main message loop:
     while (true) // Want rt update loop, not wait for message // GetMessage(&msg, nullptr, 0, 0))
@@ -77,39 +67,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         }
 
-        TriangleObject->Transform.SetRotation(Rotation);
-        TriangleObject->Transform.SetPosition(Vector2(cosf(PositionVal) * 25.0f, sinf(PositionVal) * 25.0f));
-        TriangleObject->Transform.SetScale(Vector2((cosf(ScaleVal) + 1.5f) * 2.5f, (sinf(ScaleVal) + 1.5f)) * 2.5f);
-
-        Rotation += 0.01f;
-        PositionVal += 0.01f;
-        ScaleVal += 0.01f;
-
-        // Make Debug Lines
-        Matrix2D DebugMatrix = TriangleObject->Transform.Matrix;
-        Vector2 XAxis(DebugMatrix._11, DebugMatrix._21);
-        Vector2 YAxis(DebugMatrix._12, DebugMatrix._22);
-        Vector2 Position(DebugMatrix._13, DebugMatrix._23);
-        XAxis = XAxis + Position;
-        YAxis = YAxis + Position;
-        Renderer->DrawDebugLine(Position, XAxis, Vector4(1.f, 1.f, 1.f, 1.f));
-        Renderer->DrawDebugLine(Position, YAxis, Vector4(1.f, 1.f, 1.f, 1.f));
-
-        Vector2 LocalVector1(0.25f, 0.4f);
-        Vector2 GlobalVector1 = DebugMatrix * LocalVector1;
-        Vector2 LocalVector2(0.5f, 0.5f);
-        Vector2 GlobalVector2 = DebugMatrix * LocalVector2;
-
-        Renderer->DrawDebugLine(GlobalVector1, GlobalVector2, Vector4(0.f, 1.f, 0.f, 1.f));
-
-        World->Update();
-        Renderer->PreRender();
-        World->Render();
-        Renderer->PresentRender();
+        PlaygroundManager->Update();
+        PlaygroundManager->Render();
     }
 
-    delete World;
-    delete Renderer;
+    delete PlaygroundManager;
+    delete RenderManager::Get();
 
     return (int) msg.wParam;
 }
