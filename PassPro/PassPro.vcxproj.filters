@@ -31,6 +31,9 @@
     <Filter Include="Levels">
       <UniqueIdentifier>{6ae9c20c-1bb7-499e-bc41-a9d65393033b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InputManager">
+      <UniqueIdentifier>{ba47f692-1cc0-4ee6-bbfc-ab5ef749a238}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -81,6 +84,12 @@
     <ClInclude Include="Levels\PlaygroundLevel.h">
       <Filter>Levels</Filter>
     </ClInclude>
+    <ClInclude Include="InputManager\InputManager.h">
+      <Filter>InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Delegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PassPro.cpp">
@@ -115,6 +124,12 @@
     </ClCompile>
     <ClCompile Include="Levels\PlaygroundLevel.cpp">
       <Filter>Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager\InputManager.cpp">
+      <Filter>InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Delegate.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

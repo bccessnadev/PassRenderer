@@ -9,6 +9,7 @@
 #include "RenderManager\RenderManager.h"
 #include "Levels\PlaygroundLevel.h"
 #include "ObjectManager\LevelManager.h"
+#include "InputManager\InputManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -150,6 +151,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_KEYDOWN:
+    {
+        if (InputManager* IM = InputManager::Get())
+        {
+            IM->HandleKeyPressed(wParam);
+        }
+    }
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -167,14 +175,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-    //case WM_PAINT:
-    //    {
-    //        PAINTSTRUCT ps;
-    //        HDC hdc = BeginPaint(hWnd, &ps);
-    //        // TODO: Add any drawing code that uses hdc here...
-    //        EndPaint(hWnd, &ps);
-    //    }
-    //    break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

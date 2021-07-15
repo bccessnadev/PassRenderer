@@ -165,7 +165,9 @@
   <ItemGroup>
     <ClInclude Include="Components\Component.h" />
     <ClInclude Include="Components\RenderingComponent.h" />
+    <ClInclude Include="Delegate.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="InputManager\InputManager.h" />
     <ClInclude Include="Levels\PlaygroundLevel.h" />
     <ClInclude Include="Math\Transform.h" />
     <ClInclude Include="Math\VectorLibrary.h" />
@@ -182,6 +184,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\RenderingComponent.cpp" />
+    <ClCompile Include="Delegate.cpp" />
+    <ClCompile Include="InputManager\InputManager.cpp" />
     <ClCompile Include="Levels\PlaygroundLevel.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
     <ClCompile Include="Math\VectorLibrary.cpp" />

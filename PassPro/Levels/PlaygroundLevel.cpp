@@ -2,9 +2,19 @@
 
 #include "../ObjectManager/ObjectManager.h"
 #include "../Components/RenderingComponent.h"
+#include "../InputManager/InputManager.h"
 
 PlaygroundLevel::PlaygroundLevel()
 {
+}
+
+PlaygroundLevel::~PlaygroundLevel()
+{
+    // TODO: this doesn't get called
+    if (InputManager* IM = InputManager::Get())
+    {
+        IM->UnbindFromKeyPressed(unsigned int('W'), ForwardInputBind);
+    }
 }
 
 void PlaygroundLevel::InitializeLevel()
@@ -13,6 +23,13 @@ void PlaygroundLevel::InitializeLevel()
     CRenderingComponent* TriangleRenderComponent = new CRenderingComponent(TriangleObject, RMesh::Triangle({ 0.f, 0.5f }, { 0.5f, -0.5f }, { -0.5f, -0.5f }, { 1.f, 0.f, 0.f, 1.f }));
     TriangleObject->AddComponent(TriangleRenderComponent);
     Objects->AddObject(TriangleObject);
+
+    if (InputManager* IM = InputManager::Get())
+    {
+        // TODO: Find better way to bind so we don't have to keep references like this
+        ForwardInputBind = new DelegateCallback<PlaygroundLevel>(this, &PlaygroundLevel::ForwardInput);
+        IM->BindToKeyPressed(unsigned int('W'), ForwardInputBind);
+    }
 }
 
 void PlaygroundLevel::UpdateLevel(double DeltaTime)
@@ -22,7 +39,6 @@ void PlaygroundLevel::UpdateLevel(double DeltaTime)
     TriangleObject->Transform.SetScale(Vector2((cosf(ScaleVal) + 1.5f) * 2.5f, (sinf(ScaleVal) + 1.5f)) * 2.5f);
 
     Rotation += 0.01f;
-    PositionVal += 0.01f;
     ScaleVal += 0.01f;
 
     // Make Debug Lines
@@ -41,4 +57,9 @@ void PlaygroundLevel::UpdateLevel(double DeltaTime)
     Vector2 GlobalVector2 = DebugMatrix * LocalVector2;
 
     Renderer->DrawDebugLine(GlobalVector1, GlobalVector2, Vector4(0.f, 1.f, 0.f, 1.f));
+}
+
+void PlaygroundLevel::ForwardInput()
+{
+    PositionVal += 0.01f;
 }
