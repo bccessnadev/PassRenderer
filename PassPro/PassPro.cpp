@@ -11,6 +11,13 @@
 #include "ObjectManager\LevelManager.h"
 #include "InputManager\InputManager.h"
 
+#include <chrono>
+using namespace std::chrono;
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -52,6 +59,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     PlaygroundLevel* Playground = new PlaygroundLevel();
     LevelManager* PlaygroundManager = new LevelManager(Playground);
 
+    // Time point used to track delta time
+    high_resolution_clock::time_point PreviousTime = high_resolution_clock::now();
+
     // Main message loop:
     while (true) // Want rt update loop, not wait for message // GetMessage(&msg, nullptr, 0, 0))
     {
@@ -68,12 +78,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         }
 
-        PlaygroundManager->Update();
+        // Calculate delta time and cache current time to compare against next frame
+        const duration<double> DeltaTime = duration_cast<duration<double>>(high_resolution_clock::now() - PreviousTime);
+        PreviousTime = high_resolution_clock::now();
+
+        PlaygroundManager->Update(DeltaTime.count());
         PlaygroundManager->Render();
     }
 
     delete PlaygroundManager;
     delete RenderManager::Get();
+    delete InputManager::Get();
+
+    _CrtDumpMemoryLeaks();
 
     return (int) msg.wParam;
 }
@@ -157,6 +174,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             IM->HandleKeyPressed(wParam);
         }
+        break;
+    }
+    case WM_KEYUP:
+    {
+        if (InputManager* IM = InputManager::Get())
+        {
+            IM->HandleKeyReleased(wParam);
+        }
+        break;
     }
     case WM_COMMAND:
         {

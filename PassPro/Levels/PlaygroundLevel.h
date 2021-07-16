@@ -9,21 +9,23 @@ class DelegateCallback;
 class PlaygroundLevel : public ILevel
 {
 public:
-	PlaygroundLevel();
-	~PlaygroundLevel();
-
 	virtual void InitializeLevel() override;
+	virtual void DestructLevel() override;
 	virtual void UpdateLevel(double DeltaTime) override;
 
 protected:
 
-	void ForwardInput();
+	void ForwardInputPressed();
+	void ForwardInputReleased();
 
 	Object2D* TriangleObject = nullptr;
 
-	DelegateCallback<PlaygroundLevel>* ForwardInputBind;
+	DelegateCallback<PlaygroundLevel>* ForwardInputPressedBind;
+	DelegateCallback<PlaygroundLevel>* ForwardInputReleasedBind;
 
 	float Rotation = 0.f;
 	float PositionVal = 0.f;
 	float ScaleVal = 0.f;
+
+	bool Move = false;
 };

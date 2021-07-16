@@ -46,3 +46,36 @@ void InputManager::UnbindFromKeyPressed(unsigned int KeyCode, IDelegateCallback*
 		KeyDelegatePair->second.Unbind(Callback);
 	}
 }
+
+void InputManager::HandleKeyReleased(unsigned int KeyCode)
+{
+	auto KeyDelegatePair = KeyReleasedDelegateMap.find(KeyCode);
+	if (KeyDelegatePair != KeyReleasedDelegateMap.end())
+	{
+		KeyDelegatePair->second.Broadcast();
+	}
+}
+
+void InputManager::BindToKeyReleased(unsigned int KeyCode, IDelegateCallback* Callback)
+{
+	auto KeyDelegatePair = KeyReleasedDelegateMap.find(KeyCode);
+	if (KeyDelegatePair != KeyReleasedDelegateMap.end())
+	{
+		KeyDelegatePair->second.Bind(Callback);
+	}
+	else
+	{
+		Delegate NewDelegate;
+		NewDelegate.Bind(Callback);
+		KeyReleasedDelegateMap.emplace(KeyCode, NewDelegate);
+	}
+}
+
+void InputManager::UnbindFromKeyReleased(unsigned int KeyCode, IDelegateCallback* Callback)
+{
+	auto KeyDelegatePair = KeyReleasedDelegateMap.find(KeyCode);
+	if (KeyDelegatePair != KeyReleasedDelegateMap.end())
+	{
+		KeyDelegatePair->second.Unbind(Callback);
+	}
+}

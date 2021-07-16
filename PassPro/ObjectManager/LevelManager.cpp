@@ -9,6 +9,7 @@ LevelManager::LevelManager(ILevel* LevelToManage)
 
 LevelManager::~LevelManager()
 {
+	LoadedLevel->DestructLevel();
 	delete LoadedLevel;
 }
 
