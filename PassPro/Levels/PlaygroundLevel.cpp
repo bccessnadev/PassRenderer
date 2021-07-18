@@ -13,10 +13,8 @@ void PlaygroundLevel::InitializeLevel()
 
     if (InputManager* IM = InputManager::Get())
     {
-        ForwardInputPressedBind = new DelegateCallback<PlaygroundLevel>(this, &PlaygroundLevel::ForwardInputPressed);
-        IM->BindToKeyPressed(unsigned int('W'), ForwardInputPressedBind);
-        ForwardInputReleasedBind = new DelegateCallback<PlaygroundLevel>(this, &PlaygroundLevel::ForwardInputReleased);
-        IM->BindToKeyReleased(unsigned int('W'), ForwardInputReleasedBind);
+        IM->BindToKeyPressed<PlaygroundLevel>(unsigned int('W'), this, &PlaygroundLevel::ForwardInputPressed);
+        IM->BindToKeyReleased<PlaygroundLevel>(unsigned int('W'), this, &PlaygroundLevel::ForwardInputReleased);
     }
 }
 
@@ -24,8 +22,8 @@ void PlaygroundLevel::DestructLevel()
 {
     if (InputManager* IM = InputManager::Get())
     {
-        IM->UnbindFromKeyPressed(unsigned int('W'), ForwardInputPressedBind);
-        IM->UnbindFromKeyReleased(unsigned int('W'), ForwardInputReleasedBind);
+        IM->UnbindAllFromKeyPressed<PlaygroundLevel>(unsigned int('W'), this);
+        IM->UnbindAllFromKeyReleased<PlaygroundLevel>(unsigned int('W'), this);
     }
 }
 

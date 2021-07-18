@@ -27,6 +27,8 @@ public:
 		return false;
 	}
 
+	virtual bool operator==(CallbackObjectType* Other) { return CallbackObject == Other; }
+
 private:
 	CallbackObjectType* CallbackObject;
 
@@ -43,6 +45,22 @@ public:
 	void Bind(CallbackObjectType* CallBackObject, void (CallbackObjectType::*FunctionToCall)()) { Bind(new DelegateCallback<CallbackObjectType>(CallBackObject, FunctionToCall)); }
 
 	void Unbind(IDelegateCallback* Callback);
+
+	/* Unbind all callbacks on a given object */
+	template<typename CallbackObjectType>
+	void Unbind(CallbackObjectType* Object)
+	{
+		for (auto Callback : CallbackArray)
+		{
+			if (DelegateCallback<CallbackObjectType>* DCallback = dynamic_cast<DelegateCallback<CallbackObjectType>*>(Callback))
+			{
+				if (*DCallback == Object)
+				{
+					Unbind(Callback);
+				}
+			}
+		}
+	}
 
 	void Broadcast();
 
