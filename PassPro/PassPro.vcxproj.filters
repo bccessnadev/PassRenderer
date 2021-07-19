@@ -90,6 +90,9 @@
     <ClInclude Include="Delegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Components\MovementComponent2D.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PassPro.cpp">
@@ -130,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="Delegate.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\MovementComponent2D.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -19,3 +19,11 @@ Vector2 Vector2::Normalize(Vector2 Vector)
 	Vector.Normalize();
 	return Vector;
 }
+
+Vector3 Vector3::operator*=(const float& Rhs)
+{
+	X = X * Rhs;
+	Y = Y * Rhs;
+	Z = Z * Rhs;
+	return *this;
+}

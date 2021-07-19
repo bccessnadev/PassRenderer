@@ -32,9 +32,23 @@ struct Vector2
 
 struct Vector3
 {
-	float X;
-	float Y;
-	float Z;
+	float X = 0.f;
+	float Y = 0.f;
+	float Z = 0.f;
+
+	Vector3(float x, float y, float z) : X(x), Y(y), Z(z) {};
+
+	Vector3 operator+(const Vector3& Rhs) { return Vector3(X + Rhs.X, Y + Rhs.Y, Z + Rhs.Z); }
+	Vector3 operator-(const Vector3& Rhs) { return Vector3(X - Rhs.X, Y - Rhs.Y, Z - Rhs.Z); }
+	Vector3 operator*(const Vector3& Rhs) { return Vector3(X * Rhs.X, Y * Rhs.Y, Z * Rhs.Z); }
+	Vector3 operator*(const float& Rhs) { return Vector3(X * Rhs, Y * Rhs, Z * Rhs); }
+	Vector3 operator/(const Vector3& Rhs) { return Vector3(X / Rhs.X, Y / Rhs.Y, Z / Rhs.Z); }
+	Vector3 operator/(const float& Rhs) { return Vector3(X / Rhs, Y / Rhs, Z / Rhs); }
+
+	Vector3 operator*=(const float& Rhs);
+
+	inline float Dot(const Vector3 Rhs) { return X * Rhs.X + Y * Rhs.Y + Z * Rhs.Z; }
+	inline static float Dot(const Vector3 Lhs, const Vector3 Rhs) { return Lhs.X * Rhs.X + Lhs.Y * Rhs.Y + Lhs.Z * Rhs.Z; }
 };
 
 struct Vector4
@@ -72,6 +86,21 @@ struct Matrix2D
 		: _11(In11), _12(In12), _13(In13),
 		_21(In21), _22(In22), _23(In23),
 		_31(In31), _32(In32), _33(In33) {}
+
+	Matrix2D operator*(const Matrix2D& Rhs)
+	{
+		Matrix2D ReturnMatrix;
+		ReturnMatrix._11 = Vector3::Dot(Vector3(_11, _12, _13), Vector3(Rhs._11, Rhs._21, Rhs._31));
+		ReturnMatrix._12 = Vector3::Dot(Vector3(_11, _12, _13), Vector3(Rhs._12, Rhs._22, Rhs._32));
+		ReturnMatrix._13 = Vector3::Dot(Vector3(_11, _12, _13), Vector3(Rhs._13, Rhs._23, Rhs._33));
+		ReturnMatrix._21 = Vector3::Dot(Vector3(_21, _22, _23), Vector3(Rhs._11, Rhs._21, Rhs._31));
+		ReturnMatrix._22 = Vector3::Dot(Vector3(_21, _22, _23), Vector3(Rhs._12, Rhs._22, Rhs._32));
+		ReturnMatrix._23 = Vector3::Dot(Vector3(_21, _22, _23), Vector3(Rhs._13, Rhs._23, Rhs._33));
+		ReturnMatrix._31 = Vector3::Dot(Vector3(_31, _32, _33), Vector3(Rhs._11, Rhs._21, Rhs._31));
+		ReturnMatrix._32 = Vector3::Dot(Vector3(_31, _32, _33), Vector3(Rhs._12, Rhs._22, Rhs._32));
+		ReturnMatrix._33 = Vector3::Dot(Vector3(_31, _32, _33), Vector3(Rhs._13, Rhs._23, Rhs._33));
+		return ReturnMatrix;
+	}
 
 	Vector2 operator*(const Vector2& Rhs) 
 	{ 

@@ -165,7 +165,7 @@ void RenderManager::RenderMesh(RMesh* Mesh, const Transform2D& MeshTransform)
 
 	//	Send Transform to the GPU
 	//		Have to do this weird way of getting the 3x3 matrix to the GPU due to how the GPU like to space memory
-	Matrix2D MeshMatrix = MeshTransform.Matrix;
+	Matrix2D MeshMatrix = MeshTransform.GetMatrix();
 	DirectX::XMMATRIX DXTransformMatrix(
 		MeshMatrix._11, MeshMatrix._12, MeshMatrix._13, 0.f, 
 		MeshMatrix._21, MeshMatrix._22, MeshMatrix._23, 0.f,
