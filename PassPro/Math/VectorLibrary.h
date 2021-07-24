@@ -10,21 +10,30 @@ struct Vector2
 	Vector2() : X(0.f), Y(0.f) {};
 	Vector2(float x, float y) : X(x), Y(y) {};
 
-	Vector2 operator+(const Vector2& Rhs) { return Vector2(X + Rhs.X, Y + Rhs.Y); }
-	Vector2 operator-(const Vector2& Rhs) { return Vector2(X - Rhs.X, Y - Rhs.Y); }
-	Vector2 operator*(const Vector2& Rhs) { return Vector2(X * Rhs.X, Y * Rhs.Y); }
-	Vector2 operator*(const float& Rhs) { return Vector2(X * Rhs, Y * Rhs); }
-	Vector2 operator/(const Vector2& Rhs) { return Vector2(X / Rhs.X, Y / Rhs.Y); }
-	Vector2 operator/(const float& Rhs) { return Vector2(X / Rhs, Y / Rhs); }
+	Vector2 operator+(const Vector2& Rhs) const { return Vector2(X + Rhs.X, Y + Rhs.Y); }
+	Vector2 operator+(const float& Rhs) const { return Vector2(X + Rhs, Y + Rhs); }
+	Vector2 operator-(const Vector2& Rhs) const { return Vector2(X - Rhs.X, Y - Rhs.Y); }
+	Vector2 operator-(const float& Rhs) const { return Vector2(X - Rhs, Y - Rhs); }
+	Vector2 operator-() const { return Vector2(-X, -Y); }
+	Vector2 operator*(const Vector2& Rhs) const { return Vector2(X * Rhs.X, Y * Rhs.Y); }
+	Vector2 operator*(const float& Rhs) const { return Vector2(X * Rhs, Y * Rhs); }
+	Vector2 operator/(const Vector2& Rhs) const { return Vector2(X / Rhs.X, Y / Rhs.Y); }
+	Vector2 operator/(const float& Rhs) const { return Vector2(X / Rhs, Y / Rhs); }
 
+	Vector2 operator*=(const Vector2& Rhs);
 	Vector2 operator*=(const float& Rhs);
+
+	bool operator>(const Vector2& Rhs) { return Length() > Rhs.Length(); }
+	bool operator<(const Vector2& Rhs) { return Length() < Rhs.Length(); }
 
 
 	inline float Dot(const Vector2 Rhs) { return X * Rhs.X + Y * Rhs.Y; }
 	inline static float Dot(const Vector2 Lhs, const Vector2 Rhs) { return Lhs.X * Rhs.X + Lhs.Y * Rhs.Y; }
 
-	inline float Length() { return sqrtf((X * X) + (Y * Y)); }
+	inline float Length() const { return sqrtf((X * X) + (Y * Y)); }
 	inline static float Length(const Vector2 Vector) { return sqrtf((Vector.X * Vector.X) + (Vector.Y * Vector.Y)); }
+
+	inline static Vector2 GetAbs(const Vector2 Vector) { return Vector2(fabs(Vector.X), fabs(Vector.Y)); }
 
 	void Normalize();
 	static Vector2 Normalize(Vector2 Vector);
@@ -38,12 +47,12 @@ struct Vector3
 
 	Vector3(float x, float y, float z) : X(x), Y(y), Z(z) {};
 
-	Vector3 operator+(const Vector3& Rhs) { return Vector3(X + Rhs.X, Y + Rhs.Y, Z + Rhs.Z); }
-	Vector3 operator-(const Vector3& Rhs) { return Vector3(X - Rhs.X, Y - Rhs.Y, Z - Rhs.Z); }
-	Vector3 operator*(const Vector3& Rhs) { return Vector3(X * Rhs.X, Y * Rhs.Y, Z * Rhs.Z); }
-	Vector3 operator*(const float& Rhs) { return Vector3(X * Rhs, Y * Rhs, Z * Rhs); }
-	Vector3 operator/(const Vector3& Rhs) { return Vector3(X / Rhs.X, Y / Rhs.Y, Z / Rhs.Z); }
-	Vector3 operator/(const float& Rhs) { return Vector3(X / Rhs, Y / Rhs, Z / Rhs); }
+	Vector3 operator+(const Vector3& Rhs) const { return Vector3(X + Rhs.X, Y + Rhs.Y, Z + Rhs.Z); }
+	Vector3 operator-(const Vector3& Rhs) const { return Vector3(X - Rhs.X, Y - Rhs.Y, Z - Rhs.Z); }
+	Vector3 operator*(const Vector3& Rhs) const { return Vector3(X * Rhs.X, Y * Rhs.Y, Z * Rhs.Z); }
+	Vector3 operator*(const float& Rhs) const { return Vector3(X * Rhs, Y * Rhs, Z * Rhs); }
+	Vector3 operator/(const Vector3& Rhs) const { return Vector3(X / Rhs.X, Y / Rhs.Y, Z / Rhs.Z); }
+	Vector3 operator/(const float& Rhs) const { return Vector3(X / Rhs, Y / Rhs, Z / Rhs); }
 
 	Vector3 operator*=(const float& Rhs);
 

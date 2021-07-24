@@ -1,5 +1,12 @@
 #include "VectorLibrary.h"
 
+Vector2 Vector2::operator*=(const Vector2& Rhs)
+{
+	X = X * Rhs.X;
+	Y = Y * Rhs.Y;
+	return *this;
+}
+
 Vector2 Vector2::operator*=(const float& Rhs)
 {
 	X = X * Rhs;

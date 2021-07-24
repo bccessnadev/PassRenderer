@@ -14,6 +14,6 @@ public:
 	virtual void UpdateLevel(double DeltaTime) override;
 
 protected:
-	Object2D* TriangleObject = nullptr;
+	Object2D* SquareObject = nullptr;
 
 };

@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="Components\Component.h" />
     <ClInclude Include="Components\MovementComponent2D.h" />
+    <ClInclude Include="Components\PhysicsComponent.h" />
     <ClInclude Include="Components\RenderingComponent.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="framework.h" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\MovementComponent2D.cpp" />
+    <ClCompile Include="Components\PhysicsComponent.cpp" />
     <ClCompile Include="Components\RenderingComponent.cpp" />
     <ClCompile Include="Delegate.cpp" />
     <ClCompile Include="InputManager\InputManager.cpp" />

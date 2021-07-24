@@ -25,9 +25,9 @@ public:
 
 	virtual inline void SetIsEnabled(bool NewIsEnabled) { IsEnabled = NewIsEnabled; }
 
-	virtual void Update(double deltaTime = 0) = 0;
+	virtual void Update(double deltaTime = 0) {};
 
-	virtual void Render() = 0;
+	virtual void Render() {};
 
 protected:
 

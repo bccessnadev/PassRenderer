@@ -13,7 +13,10 @@ public:
 	~RMesh();
 
 	/* Returns a triangle mesh */
-	static RMesh* Triangle(Vector2 Point1, Vector2 Point2, Vector2 Point3, Vector4 Color);
+	static RMesh* Triangle(const Vector2 Point1, const Vector2 Point2, const Vector2 Point3, const Vector4 Color);
+
+	/* Returns a Square mesh */
+	static RMesh* Square(const Vector2 Size, const Vector4 Color);
 
 protected:
 

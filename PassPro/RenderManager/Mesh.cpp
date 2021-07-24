@@ -21,7 +21,7 @@ RMesh::RMesh(const std::vector<Vertex2D>& MeshVerticies, TVertexShader* MeshVert
 	ConstructVertexBuffer();
 }
 
-RMesh* RMesh::Triangle(Vector2 Point1, Vector2 Point2, Vector2 Point3, Vector4 Color)
+RMesh* RMesh::Triangle(const Vector2 Point1, const Vector2 Point2, const Vector2 Point3, const Vector4 Color) 
 {
 	vector<Vertex2D> TriangleVerts;
 	TriangleVerts.push_back(Vertex2D(Point1, Color));
@@ -29,6 +29,20 @@ RMesh* RMesh::Triangle(Vector2 Point1, Vector2 Point2, Vector2 Point3, Vector4 C
 	TriangleVerts.push_back(Vertex2D(Point3, Color));
 
 	return new RMesh(TriangleVerts);
+}
+
+RMesh* RMesh::Square(const Vector2 Size, const Vector4 Color)
+{
+	const Vector2 HalfSize = Size * 0.5f;
+	vector<Vertex2D> SquareVerts;
+	SquareVerts.push_back(Vertex2D(HalfSize, Color));
+	SquareVerts.push_back(Vertex2D(Vector2(HalfSize.X, -HalfSize.Y), Color));
+	SquareVerts.push_back(Vertex2D(Vector2(-HalfSize.X, -HalfSize.Y), Color));
+	SquareVerts.push_back(Vertex2D(Vector2(-HalfSize.X, -HalfSize.Y), Color));
+	SquareVerts.push_back(Vertex2D(Vector2(-HalfSize.X, HalfSize.Y), Color));
+	SquareVerts.push_back(Vertex2D(HalfSize, Color));
+
+	return new RMesh(SquareVerts);
 }
 
 RMesh::~RMesh()
@@ -60,7 +74,7 @@ void RMesh::ConstructVertexBuffer()
 		ZeroMemory(&BufferDesc, sizeof(BufferDesc));
 		ZeroMemory(&SubData, sizeof(SubData));
 		BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		BufferDesc.ByteWidth = sizeof(Vertex2D) * 3;
+		BufferDesc.ByteWidth = sizeof(Vertex2D) * Verticies.size();
 		BufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
 		SubData.pSysMem = Verticies.data();
