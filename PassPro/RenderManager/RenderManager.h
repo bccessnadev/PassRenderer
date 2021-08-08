@@ -86,6 +86,7 @@ public:
 	void RenderMesh(class RMesh* Mesh, const Transform2D& MeshTransform);
 
 	void DrawDebugLine(const Vector2& PointA, const Vector2& PointB, const Vector4& Color);
+	void DrawDebugRectangle(const Transform2D& Transform, const Vector4& Color);
 	
 protected:
 

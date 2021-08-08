@@ -25,8 +25,8 @@ void MovementComponent2D::Update(double DeltaTime)
 {
 	if (Object2D* Owner = static_cast<Object2D*>(GetOwner()))
 	{
-		Owner->Transform.TranslateLocal(Vector2(0.f, 1.f) * ForwardInput * MovementSpeed * DeltaTime);
-		Owner->Transform.TranslateLocal(Vector2(1.f, 0.f) * RightInput * MovementSpeed * DeltaTime);
+		Owner->Transform.TranslateGlobal(Vector2(0.f, 1.f) * ForwardInput * MovementSpeed * DeltaTime);
+		Owner->Transform.TranslateGlobal(Vector2(1.f, 0.f) * RightInput * MovementSpeed * DeltaTime);
 		Owner->Transform.RotateLocal(CounterClockwiseInput * RoationSpeed * DeltaTime * (3.14159265359 / 180.f));
 	}
 }

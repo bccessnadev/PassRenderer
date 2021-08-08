@@ -33,6 +33,8 @@ struct Vector2
 	inline float Length() const { return sqrtf((X * X) + (Y * Y)); }
 	inline static float Length(const Vector2 Vector) { return sqrtf((Vector.X * Vector.X) + (Vector.Y * Vector.Y)); }
 
+	inline Vector2 Rotate(const float AngleInRadians) const { return Vector2((X * cosf(AngleInRadians)) - (Y * sinf(AngleInRadians)), (X * sinf(AngleInRadians)) + (Y * cosf(AngleInRadians))); }
+
 	inline static Vector2 GetAbs(const Vector2 Vector) { return Vector2(fabs(Vector.X), fabs(Vector.Y)); }
 
 	void Normalize();

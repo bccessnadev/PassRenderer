@@ -13,7 +13,7 @@ void Transform2D::SetPosition(const Vector2& Position)
 	Matrix._23 = Position.Y;
 }
 
-Vector2 Transform2D::GetPosition()
+Vector2 Transform2D::GetPosition() const
 {
 	return Vector2(Matrix._13, Matrix._23);
 }
@@ -28,7 +28,7 @@ void Transform2D::SetRotation(const float RotationInRads)
 	SetScale(CachedScale);
 }
 
-Vector2 Transform2D::GetScale()
+Vector2 Transform2D::GetScale() const
 {
 	// Get both axis from matrix
 	Vector2 XAxis(Matrix._11, Matrix._21);
@@ -64,6 +64,11 @@ void Transform2D::TranslateLocal(const Vector2& Translation)
 	SetPosition(GetPosition() + WorldTranslation);
 }
 
+void Transform2D::TranslateGlobal(const Vector2& Translation)
+{
+	SetPosition(GetPosition() + Translation);
+}
+
 void Transform2D::RotateLocal(const float Rotation)
 {
 	Matrix2D RotationMatrix;
@@ -74,14 +79,14 @@ void Transform2D::RotateLocal(const float Rotation)
 	Matrix = Matrix * RotationMatrix;
 }
 
-Matrix2D Transform2D::GetRotationMatrix()
+Matrix2D Transform2D::GetRotationMatrix() const
 {
 	Matrix2D RotationMatrix;
 
 	// Get both axis from matrix
 	Vector2 XAxis(Matrix._11, Matrix._21);
 	Vector2 YAxis(Matrix._12, Matrix._22);
-
+	
 	// Normalize axis to remove scale
 	XAxis.Normalize();
 	YAxis.Normalize();
@@ -92,4 +97,10 @@ Matrix2D Transform2D::GetRotationMatrix()
 	RotationMatrix._22 = YAxis.Y;
 
 	return RotationMatrix;
+}
+
+float Transform2D::GetRotationAngle() const
+{
+	const Matrix2D RotationMatrix = GetRotationMatrix();
+	return atan2f(RotationMatrix._21, RotationMatrix._11);
 }
