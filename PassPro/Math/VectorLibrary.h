@@ -37,8 +37,10 @@ struct Vector2
 
 	inline static Vector2 GetAbs(const Vector2 Vector) { return Vector2(fabs(Vector.X), fabs(Vector.Y)); }
 
-	void Normalize();
+	Vector2 Normalize();
 	static Vector2 Normalize(Vector2 Vector);
+
+	Vector2 GetNormal() const { return Vector2(-Y, X).Normalize(); }
 };
 
 struct Vector3
@@ -98,7 +100,7 @@ struct Matrix2D
 		_21(In21), _22(In22), _23(In23),
 		_31(In31), _32(In32), _33(In33) {}
 
-	Matrix2D operator*(const Matrix2D& Rhs)
+	Matrix2D operator*(const Matrix2D& Rhs) const 
 	{
 		Matrix2D ReturnMatrix;
 		ReturnMatrix._11 = Vector3::Dot(Vector3(_11, _12, _13), Vector3(Rhs._11, Rhs._21, Rhs._31));
@@ -113,7 +115,7 @@ struct Matrix2D
 		return ReturnMatrix;
 	}
 
-	Vector2 operator*(const Vector2& Rhs) 
+	Vector2 operator*(const Vector2& Rhs)  const 
 	{ 
 		const float X = (_11 * Rhs.X) + (_12 * Rhs.Y) +_13;
 		const float Y = (_21 * Rhs.X) + (_22 * Rhs.Y) +_23;

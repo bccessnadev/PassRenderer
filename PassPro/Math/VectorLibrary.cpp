@@ -14,11 +14,12 @@ Vector2 Vector2::operator*=(const float& Rhs)
 	return *this;
 }
 
-void Vector2::Normalize()
+Vector2 Vector2::Normalize()
 {
 	const float VectorLength = Length();
 	X /= VectorLength;
 	Y /= VectorLength;
+	return *this;
 }
 
 Vector2 Vector2::Normalize(Vector2 Vector)

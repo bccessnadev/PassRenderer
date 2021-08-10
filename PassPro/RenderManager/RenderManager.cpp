@@ -200,9 +200,8 @@ void RenderManager::DrawDebugRectangle(const Transform2D& Transform, const Vecto
 {
 	const Vector2 Center = Transform.GetPosition();
 	const Vector2 Extent = Transform.GetScale() * 0.5f;
-	const Matrix2D RotationMatrix = Transform.GetRotationMatrix();
-
 	const float RectangleRotation = Transform.GetRotationAngle();
+
 	const Vector2 PointA = Center + Extent.Rotate(RectangleRotation);
 	const Vector2 PointB = Center + Vector2(Extent.X, -Extent.Y).Rotate(RectangleRotation);
 	const Vector2 PointC = Center + Vector2(-Extent.X, -Extent.Y).Rotate(RectangleRotation);

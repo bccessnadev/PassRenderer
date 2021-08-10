@@ -96,6 +96,9 @@
     <ClInclude Include="Components\PhysicsComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Math\PhysicsManager.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PassPro.cpp">
@@ -142,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="Components\PhysicsComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\PhysicsManager.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -61,6 +61,13 @@ struct DebugVertex2D
 	}
 };
 
+namespace Colors
+{
+	const Vector4 Red = Vector4(1.f, 0.f, 0.f, 1.f);
+	const Vector4 Green = Vector4(0.f, 1.f, 0.f, 1.f);
+	const Vector4 Blue = Vector4(0.f, 0.f, 1.f, 1.f);
+}
+
 class RenderManager
 {
 public:

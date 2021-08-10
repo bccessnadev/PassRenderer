@@ -3,6 +3,7 @@
 class LevelManager;
 class ObjectManager;
 class RenderManager;
+class PhysicsManager;
 
 class ILevel
 {
@@ -18,4 +19,5 @@ public:
 protected:
 	ObjectManager* Objects = nullptr;
 	RenderManager* Renderer = nullptr;
+	PhysicsManager* PhysicsEngine = nullptr;
 };

@@ -15,5 +15,6 @@ public:
 
 protected:
 	Object2D* SquareObject = nullptr;
+	Object2D* PhysicsDummy = nullptr;
 
 };

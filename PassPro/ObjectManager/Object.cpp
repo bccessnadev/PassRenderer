@@ -10,6 +10,12 @@ Object::Object()
 	InstanceID = CurrentInstanceID++;
 }
 
+Object::Object(const std::string ObjectName)
+{
+	InstanceID = CurrentInstanceID++;
+	Name = ObjectName;
+}
+
 Object::~Object()
 {
 	for (int c = 0; c < Components.size(); c++)

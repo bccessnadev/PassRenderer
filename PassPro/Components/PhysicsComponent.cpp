@@ -1,21 +1,21 @@
 #include "PhysicsComponent.h"
+#include "../Math/PhysicsManager.h"
 #include "../ObjectManager/Object.h"
 #include "../RenderManager/RenderManager.h"
 #include "../WorldSize.h"
+#include <vector>
 
-AABBCollider::AABBCollider(Object2D* RootObject, Vector2 ColliderSize) : ICollider(RootObject)
-{
-	Extent = ColliderSize * 0.5f;
-
-	if (Root)
-	{
-		Extent *= RootObject->Transform.GetScale();
-	}
-}
+using namespace std;
 
 PhysicsComponent2D::PhysicsComponent2D(Object* Parent, ICollider* Collision) : IComponent(Parent), Collider(Collision)
 {
 	Parent2D = static_cast<Object2D*>(Parent);
+
+	if (Collider)
+	{
+		PhysicsManager::Get()->RegisterPhysicsObject(this);
+	}
+
 	if (Parent2D)
 	{
 		PreviousPosition = Parent2D->Transform.GetPosition();
@@ -37,7 +37,28 @@ void PhysicsComponent2D::Update(double DeltaTime)
 
 		if (bDebugDraw)
 		{
-			RenderManager::Get()->DrawDebugRectangle(Parent2D->Transform, Vector4(0.f, 1.f, 0.f, 1.f));
+			if (ConvexCollider2D* ConvexCollider = static_cast<ConvexCollider2D*>(Collider))
+			{
+				const vector<Vector2> ColliderVerts = ConvexCollider->GetWorldSpaceVerticies();
+				RenderManager* Renderer = RenderManager::Get();
+
+				for (int v = 0; v < ColliderVerts.size(); v++)
+				{
+					// Have the second vertex loop back to the beginning when on last index
+					const int v2 = v < ColliderVerts.size() - 1 ? v + 1 : 0;
+					Renderer->DrawDebugLine(ColliderVerts[v], ColliderVerts[v2], bOverlapping ? Colors::Red : Colors::Green);
+				}
+			}
 		}
 	}
+}
+
+void PhysicsComponent2D::OnOverlapStart()
+{
+	bOverlapping = true;
+}
+
+void PhysicsComponent2D::OnOverlapEnd()
+{
+	bOverlapping = false;
 }

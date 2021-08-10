@@ -23,6 +23,7 @@ public:
 	ObjectManager* ObjectManager = nullptr;
 
 	Object();
+	Object(const std::string ObjectName);
 	~Object();
 
 	inline bool IsActive() { return bIsActive; }
@@ -109,5 +110,6 @@ class Object2D : public Object
 public:
 	Object2D() {}
 	Object2D(const Vector2 Position, const float RotationInRads, const Vector2 Scale) : Transform(Position, RotationInRads, Scale) {}
+	Object2D(const Vector2 Position, const float RotationInRads, const Vector2 Scale, const std::string ObjectName) : Object(ObjectName), Transform(Position, RotationInRads, Scale) {}
 	Transform2D Transform;
 };

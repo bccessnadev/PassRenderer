@@ -171,6 +171,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="InputManager\InputManager.h" />
     <ClInclude Include="Levels\PlaygroundLevel.h" />
+    <ClInclude Include="Math\PhysicsManager.h" />
     <ClInclude Include="Math\Transform.h" />
     <ClInclude Include="Math\VectorLibrary.h" />
     <ClInclude Include="ObjectManager\Level.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="Delegate.cpp" />
     <ClCompile Include="InputManager\InputManager.cpp" />
     <ClCompile Include="Levels\PlaygroundLevel.cpp" />
+    <ClCompile Include="Math\PhysicsManager.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
     <ClCompile Include="Math\VectorLibrary.cpp" />
     <ClCompile Include="ObjectManager\Level.cpp" />

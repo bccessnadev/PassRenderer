@@ -1,31 +1,9 @@
 #pragma once
 
 #include "Component.h"
-#include "../Math/VectorLibrary.h"
+#include "../Math/PhysicsManager.h"
 
 class Object2D;
-
-class ICollider
-{
-public:
-	ICollider(Object2D* RootObject) : Root(RootObject) {}
-
-	Object2D* Root;
-};
-
-class AABBCollider : public ICollider
-{
-public:
-	AABBCollider(Object2D* RootObject, Vector2 ColliderSize);
-	Vector2 Extent;
-};
-
-class ConvexCollider : public ICollider
-{
-public:
-	ConvexCollider(Object2D* RootObject, Vector2 ColliderSize);
-	Vector2 Extent;
-};
 
 class PhysicsComponent2D : public IComponent
 {
@@ -35,6 +13,11 @@ public:
 
 	virtual void Update(double DeltaTime);
 
+	void OnOverlapStart();
+	void OnOverlapEnd();
+
+	inline bool IsOverlapping() const { return bOverlapping; }
+
 	ICollider* Collider;
 	bool bDebugDraw = false;
 
@@ -42,7 +25,9 @@ protected:
 	Vector2 Veloctiy;
 	Vector2 PreviousPosition;
 
-	Object2D* Parent2D;
+	Object2D* Parent2D = nullptr;
+
+	bool bOverlapping = false;
 
 private:
 	const float VelocityUpdateRate = 1.f;
