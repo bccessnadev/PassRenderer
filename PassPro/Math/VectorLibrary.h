@@ -20,11 +20,16 @@ struct Vector2
 	Vector2 operator/(const Vector2& Rhs) const { return Vector2(X / Rhs.X, Y / Rhs.Y); }
 	Vector2 operator/(const float& Rhs) const { return Vector2(X / Rhs, Y / Rhs); }
 
+	Vector2 operator+=(const Vector2& Rhs);
+	Vector2 operator+=(const float& Rhs);
 	Vector2 operator*=(const Vector2& Rhs);
 	Vector2 operator*=(const float& Rhs);
 
-	bool operator>(const Vector2& Rhs) { return Length() > Rhs.Length(); }
-	bool operator<(const Vector2& Rhs) { return Length() < Rhs.Length(); }
+	bool operator==(const Vector2& Rhs) const { return X == Rhs.X && Y == Rhs.Y; }
+
+	bool operator>(const Vector2& Rhs) const { return Length() > Rhs.Length(); }
+	bool operator<(const Vector2& Rhs) const { return Length() < Rhs.Length(); }
+
 
 
 	inline float Dot(const Vector2 Rhs) { return X * Rhs.X + Y * Rhs.Y; }

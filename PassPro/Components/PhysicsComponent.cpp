@@ -4,6 +4,9 @@
 #include "../RenderManager/RenderManager.h"
 #include "../WorldSize.h"
 #include <vector>
+#include <debugapi.h>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -16,10 +19,7 @@ PhysicsComponent2D::PhysicsComponent2D(Object* Parent, ICollider* Collision) : I
 		PhysicsManager::Get()->RegisterPhysicsObject(this);
 	}
 
-	if (Parent2D)
-	{
-		PreviousPosition = Parent2D->Transform.GetPosition();
-	}
+	ForcesToApply.reserve(10);
 }
 
 PhysicsComponent2D::~PhysicsComponent2D()
@@ -31,9 +31,19 @@ void PhysicsComponent2D::Update(double DeltaTime)
 {
 	if (Parent2D)
 	{
-		const Vector2 ParentPosition = Parent2D->Transform.GetPosition();
-		Veloctiy = (ParentPosition - PreviousPosition) / DeltaTime;
-		PreviousPosition = ParentPosition;
+		// Apply any pending forces
+		if (ForcesToApply.size() > 0)
+		{
+			for (int f = 0; f < ForcesToApply.size(); f++)
+			{
+				Velocity += ForcesToApply[f] * (Mass > 0.f ? (1.f / Mass) : 1.f) * DeltaTime;
+			}
+
+			ForcesToApply.clear();
+		}
+
+		// Move the parent's transform based on the velocity
+		Parent2D->Transform.TranslateGlobal(Velocity * DeltaTime);
 
 		if (bDebugDraw)
 		{
@@ -49,8 +59,22 @@ void PhysicsComponent2D::Update(double DeltaTime)
 					Renderer->DrawDebugLine(ColliderVerts[v], ColliderVerts[v2], bOverlapping ? Colors::Red : Colors::Green);
 				}
 			}
+
+			ostringstream VelocityDebugStream;
+			VelocityDebugStream << "Velocity: [" << Velocity.X << ", " << Velocity.Y << "] \n";
+			OutputDebugStringA(VelocityDebugStream.str().c_str());
 		}
 	}
+}
+
+void PhysicsComponent2D::AddImpulse(const Vector2 Impulse)
+{
+	Velocity += Impulse * (Mass > 0.f ? (1.f / Mass) : 1.f);
+}
+
+void PhysicsComponent2D::AddForce(const Vector2 Force)
+{
+	ForcesToApply.push_back(Force);
 }
 
 void PhysicsComponent2D::OnOverlapStart()

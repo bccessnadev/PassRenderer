@@ -59,6 +59,23 @@ public:
 	******************************************************************/
 	//IComponent* FindComponent(ComponentType::Type type);
 
+	/******************************************************************
+		FindComponent()
+		Returns the first component of the template class in the GameObjects
+			collection. Returns a nullptr if there is no component
+			of that type
+	******************************************************************/
+	template<typename T>
+	T FindComponent()
+	{
+		for (int c = 0; c < Components.size(); c++)
+		{
+			if (T ComponentOfType = static_cast<T>(Components[c]))
+			{
+				return ComponentOfType;
+			}
+		}
+	}
 
 	/******************************************************************
 		GetComponentsOfType()

@@ -1,6 +1,8 @@
 #include "MovementComponent2D.h"
 #include "../ObjectManager/Object.h"
 #include "../InputManager/InputManager.h"
+#include "PhysicsComponent.h"
+#include "../RenderManager/RenderManager.h"
 
 MovementComponent2D::MovementComponent2D(Object* InParent) : IComponent(InParent)
 {
@@ -19,11 +21,61 @@ MovementComponent2D::MovementComponent2D(Object* InParent) : IComponent(InParent
 		IM->BindToKeyPressed<MovementComponent2D>(0x25, this, &MovementComponent2D::RotateCounterClockwise);
 		IM->BindToKeyReleased<MovementComponent2D>(0x25, this, &MovementComponent2D::StopRotateCounterClockwise);
 	}
+
+	Owner = static_cast<Object2D*>(Parent);
+	PhysicsComponent = Parent->FindComponent<PhysicsComponent2D*>();
 }
 
 void MovementComponent2D::Update(double DeltaTime)
 {
-	if (Object2D* Owner = static_cast<Object2D*>(GetOwner()))
+	if (!Owner)
+	{
+		return;
+	}
+
+	if (PhysicsComponent)
+	{
+		if (ForwardInput != 0.f || RightInput != 0.f)
+		{
+			Vector2 DeltaVelocity = Vector2(
+				RightInput * MovementSpeed * DeltaTime,
+				ForwardInput * MovementSpeed * DeltaTime);
+			
+			if (Vector2::Length(PhysicsComponent->Velocity + DeltaVelocity) > MaxSpeed)
+			{
+				const float CurrentSpeed = PhysicsComponent->GetSpeed();
+				const Vector2 TargetDir = Vector2::Normalize(PhysicsComponent->Velocity + DeltaVelocity);
+				const Vector2 TargetVelocity = TargetDir * MaxSpeed;
+				DeltaVelocity = TargetVelocity - PhysicsComponent->Velocity;
+			}
+
+			PhysicsComponent->Velocity += DeltaVelocity;
+			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (DeltaVelocity * 10.f), Colors::Red);
+		}
+
+		Owner->Transform.RotateLocal(CounterClockwiseInput * RoationSpeed * DeltaTime * (3.14159265359 / 180.f));
+
+		if (PhysicsComponent->GetSpeed() > DBL_EPSILON)
+		{
+			const Vector2 FrictionAlpha = Vector2(RightInput == 0.f ? 1.f : 0.f, ForwardInput == 0.f ? 1.f : 0.f);
+
+			const Vector2 FrictionDirection = -Vector2::Normalize(PhysicsComponent->Velocity);
+			const Vector2 FrictionForce = FrictionAlpha * FrictionDirection * Friction;
+
+			// Make sure we don't add enough friction to switch it's direction
+			if (PhysicsComponent->GetSpeed() - Vector2::Length(FrictionForce * DeltaTime) > 0.f)
+			{
+				PhysicsComponent->AddForce(FrictionForce);
+			}
+			else
+			{
+				PhysicsComponent->Velocity = Vector2(0.f, 0.f);
+			}
+
+			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (FrictionForce * 0.1f), Colors::Blue);
+		}
+	}
+	else
 	{
 		Owner->Transform.TranslateGlobal(Vector2(0.f, 1.f) * ForwardInput * MovementSpeed * DeltaTime);
 		Owner->Transform.TranslateGlobal(Vector2(1.f, 0.f) * RightInput * MovementSpeed * DeltaTime);
