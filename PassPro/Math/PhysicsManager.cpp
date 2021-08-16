@@ -98,6 +98,34 @@ void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, Physic
 				ObjectB->OnOverlapStart();
 			}
 
+			// The ratio of the resolution that should be applied to ObjectA
+			float ResolutionAlpha = 1.f;
+			
+			const float AMass = ObjectA->Mass;
+			const float BMass = ObjectB->Mass;
+
+			// If both objects have the same mass, apply half of the resolve vector to each
+			if (AMass == BMass)
+			{
+				ResolutionAlpha = 0.5;
+			}
+			// If one of the objects has no mass, apply all of the resolution to that object
+			else if (AMass == 0.f || BMass == 0.f)
+			{
+				ResolutionAlpha = AMass == 0.f ? 1.f : 0.f;
+			}
+			// If each object has a unique non-zero mass, apply the resolution based on the ratio between the two masses
+			else
+			{
+				ResolutionAlpha = BMass / (AMass + BMass);
+			}
+
+			AResolution *= ResolutionAlpha;
+			BResolution *= (1 - ResolutionAlpha);
+
+			ApplyResolution(ObjectA, AResolution);
+			ApplyResolution(ObjectB, BResolution);
+
 			const Vector2 APos = ColliderA->Root->Transform.GetPosition();
 			const Vector2 BPos = ColliderB->Root->Transform.GetPosition();
 			RenderManager::Get()->DrawDebugLine(APos, APos + AResolution, Colors::Blue);
@@ -176,6 +204,22 @@ void PhysicsManager::SAT_ProjectionHelper(const std::vector<Vector2> Verts, cons
 		if (ProjectedPos < OutMinMax.X)
 		{
 			OutMinMax.X = ProjectedPos;
+		}
+	}
+}
+
+void PhysicsManager::ApplyResolution(PhysicsComponent2D* Object, Vector2 Resolution)
+{
+	if (Object2D* Parent = Object->GetOwner2D())
+	{
+		Parent->Transform.TranslateGlobal(Resolution);
+
+		// If the resolution opposes the velocity, just set the velocity to 0.0 for now
+		const float ResolutionDotVelocity = Vector2::Dot(Resolution, Object->Velocity);
+		if (ResolutionDotVelocity < 0.f)
+		{
+			Vector2 DeltaVelocity = Vector2::Normalize(Resolution) * fabs(ResolutionDotVelocity);
+			Object->Velocity += DeltaVelocity;
 		}
 	}
 }

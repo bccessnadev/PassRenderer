@@ -57,6 +57,8 @@ private:
 	bool SAT_CollisionTestHelper(const std::vector<Vector2> AVerts, const std::vector<Vector2> BVerts, Vector2& OutResolution);
 	void SAT_ProjectionHelper(const std::vector<Vector2> Verts, const Vector2 Normal, Vector2& OutMinMax);
 
+	void ApplyResolution(PhysicsComponent2D* Object, Vector2 Resolution);
+
 	std::vector<PhysicsComponent2D*> PhysicsObjects;
 
 };

@@ -50,7 +50,7 @@ void MovementComponent2D::Update(double DeltaTime)
 			}
 
 			PhysicsComponent->Velocity += DeltaVelocity;
-			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (DeltaVelocity * 10.f), Colors::Red);
+			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (DeltaVelocity * 10.f), Colors::Yellow);
 		}
 
 		Owner->Transform.RotateLocal(CounterClockwiseInput * RoationSpeed * DeltaTime * (3.14159265359 / 180.f));
@@ -72,7 +72,7 @@ void MovementComponent2D::Update(double DeltaTime)
 				PhysicsComponent->Velocity = Vector2(0.f, 0.f);
 			}
 
-			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (FrictionForce * 0.1f), Colors::Blue);
+			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (FrictionForce * 0.1f), Colors::Red);
 		}
 	}
 	else

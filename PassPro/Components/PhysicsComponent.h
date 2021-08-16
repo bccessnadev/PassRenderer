@@ -12,9 +12,11 @@ public:
 	PhysicsComponent2D(Object* Parent, ICollider* Collision = nullptr);
 	~PhysicsComponent2D();
 
-	virtual void Update(double DeltaTime);
+	virtual void Update(double DeltaTime) override;
+	virtual void Render() override;
 
 	inline float GetSpeed() const { return Velocity.Length(); }
+	inline Object2D* GetOwner2D() const { return Parent2D; }
 
 	/* Adds Impulse * (1.f / Mass) to the velocity. 
 	* An impulse is added in its entirety in one frame, 
