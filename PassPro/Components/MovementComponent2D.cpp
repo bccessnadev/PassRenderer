@@ -4,22 +4,40 @@
 #include "PhysicsComponent.h"
 #include "../RenderManager/RenderManager.h"
 
-MovementComponent2D::MovementComponent2D(Object* InParent) : IComponent(InParent)
+MovementComponent2D::MovementComponent2D(Object* InParent, const int Player) : IComponent(InParent)
 {
 	if (InputManager* IM = InputManager::Get())
 	{
-		IM->BindToKeyPressed<MovementComponent2D>('W', this, &MovementComponent2D::MoveForward);
-		IM->BindToKeyReleased<MovementComponent2D>('W', this, &MovementComponent2D::StopMoveForward);
-		IM->BindToKeyPressed<MovementComponent2D>('S', this, &MovementComponent2D::MoveBack);
-		IM->BindToKeyReleased<MovementComponent2D>('S', this, &MovementComponent2D::StopMoveBack);
-		IM->BindToKeyPressed<MovementComponent2D>('A', this, &MovementComponent2D::MoveLeft);
-		IM->BindToKeyReleased<MovementComponent2D>('A', this, &MovementComponent2D::StopMoveLeft);
-		IM->BindToKeyPressed<MovementComponent2D>('D', this, &MovementComponent2D::MoveRight);
-		IM->BindToKeyReleased<MovementComponent2D>('D', this, &MovementComponent2D::StopMoveRight);
-		IM->BindToKeyPressed<MovementComponent2D>(0x27, this, &MovementComponent2D::RotateClockwise);
-		IM->BindToKeyReleased<MovementComponent2D>(0x27, this, &MovementComponent2D::StopRotateClockwise);
-		IM->BindToKeyPressed<MovementComponent2D>(0x25, this, &MovementComponent2D::RotateCounterClockwise);
-		IM->BindToKeyReleased<MovementComponent2D>(0x25, this, &MovementComponent2D::StopRotateCounterClockwise);
+		if (Player == 0)
+		{
+			IM->BindToKeyPressed<MovementComponent2D>('W', this, &MovementComponent2D::MoveForward);
+			IM->BindToKeyReleased<MovementComponent2D>('W', this, &MovementComponent2D::StopMoveForward);
+			IM->BindToKeyPressed<MovementComponent2D>('S', this, &MovementComponent2D::MoveBack);
+			IM->BindToKeyReleased<MovementComponent2D>('S', this, &MovementComponent2D::StopMoveBack);
+			IM->BindToKeyPressed<MovementComponent2D>('A', this, &MovementComponent2D::MoveLeft);
+			IM->BindToKeyReleased<MovementComponent2D>('A', this, &MovementComponent2D::StopMoveLeft);
+			IM->BindToKeyPressed<MovementComponent2D>('D', this, &MovementComponent2D::MoveRight);
+			IM->BindToKeyReleased<MovementComponent2D>('D', this, &MovementComponent2D::StopMoveRight);
+			IM->BindToKeyPressed<MovementComponent2D>('E', this, &MovementComponent2D::RotateClockwise);
+			IM->BindToKeyReleased<MovementComponent2D>('E', this, &MovementComponent2D::StopRotateClockwise);
+			IM->BindToKeyPressed<MovementComponent2D>('Q', this, &MovementComponent2D::RotateCounterClockwise);
+			IM->BindToKeyReleased<MovementComponent2D>('Q', this, &MovementComponent2D::StopRotateCounterClockwise);
+		}
+		else if (Player == 1)
+		{
+			IM->BindToKeyPressed<MovementComponent2D>(0x26, this, &MovementComponent2D::MoveForward);
+			IM->BindToKeyReleased<MovementComponent2D>(0x26, this, &MovementComponent2D::StopMoveForward);
+			IM->BindToKeyPressed<MovementComponent2D>(0x28, this, &MovementComponent2D::MoveBack);
+			IM->BindToKeyReleased<MovementComponent2D>(0x28, this, &MovementComponent2D::StopMoveBack);
+			IM->BindToKeyPressed<MovementComponent2D>(0x25, this, &MovementComponent2D::MoveLeft);
+			IM->BindToKeyReleased<MovementComponent2D>(0x25, this, &MovementComponent2D::StopMoveLeft);
+			IM->BindToKeyPressed<MovementComponent2D>(0x27, this, &MovementComponent2D::MoveRight);
+			IM->BindToKeyReleased<MovementComponent2D>(0x27, this, &MovementComponent2D::StopMoveRight);
+			IM->BindToKeyPressed<MovementComponent2D>(0x63, this, &MovementComponent2D::RotateClockwise);
+			IM->BindToKeyReleased<MovementComponent2D>(0x63, this, &MovementComponent2D::StopRotateClockwise);
+			IM->BindToKeyPressed<MovementComponent2D>(0x63, this, &MovementComponent2D::RotateCounterClockwise);
+			IM->BindToKeyReleased<MovementComponent2D>(0x63, this, &MovementComponent2D::StopRotateCounterClockwise);
+		}
 	}
 
 	Owner = static_cast<Object2D*>(Parent);

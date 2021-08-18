@@ -83,8 +83,14 @@ void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, Physic
 
 		// Test all A edges and all B edges
 		Vector2 AResolution = Vector2(INFINITY, INFINITY);
+		bool bAUseOtherResolution = false;
 		Vector2 BResolution = Vector2(INFINITY, INFINITY);
-		bool bOverlapping = SAT_CollisionTestHelper(AVerts, BVerts, AResolution) && SAT_CollisionTestHelper(BVerts, AVerts, BResolution);	
+		bool bBUseOtherResolution = false;
+
+		bool bOverlapping = SAT_CollisionTestHelper(AVerts, BVerts, AResolution, bAUseOtherResolution) && SAT_CollisionTestHelper(BVerts, AVerts, BResolution, bBUseOtherResolution);
+
+		AResolution = bAUseOtherResolution ? -BResolution : AResolution;
+		BResolution = bBUseOtherResolution ? -AResolution : BResolution;
 
 		// Has overlap occurred
 		if (bOverlapping)
@@ -145,10 +151,13 @@ void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, Physic
 	}
 }
 
-bool PhysicsManager::SAT_CollisionTestHelper(const vector<Vector2> AVerts, const vector<Vector2> BVerts, Vector2& OutResolution)
+bool PhysicsManager::SAT_CollisionTestHelper(const vector<Vector2> AVerts, const vector<Vector2> BVerts, Vector2& OutResolution, bool& bUseOtherResolve)
 {
 	bool bOverlapping = true;
 	OutResolution = Vector2(INFINITY, INFINITY);
+	bUseOtherResolve = true;
+
+	vector<Vector2> OverlappingVerts;
 
 	// For each edge in ColliderA
 	for (int ae = 0; ae < AVerts.size(); ae++)
@@ -178,11 +187,56 @@ bool PhysicsManager::SAT_CollisionTestHelper(const vector<Vector2> AVerts, const
 			bOverlapping = false;
 			break;
 		}
-		// If we are overlapping, cache the resolution if it is smaller than the current
-		else if (OverlapAmount < fabs(OutResolution.Length()))
+		// If we are overlapping
+		else 
 		{
-			OutResolution = EdgeNormal * (OverlapAmount * ADirection);
+			RenderManager::Get()->DrawDebugLine(DebugEdgeCenter, DebugEdgeCenter + EdgeNormal * (OverlapAmount * ADirection), Colors::Cyan);
+
+			// Determine what verts are inside every edge to get the overlapping verticies
+			for (int bv = 0; bv < BVerts.size(); bv++)
+			{
+				const Vector2 BVert = BVerts[bv];
+				const float ProjectedPos = Vector2::Dot(EdgeNormal, BVert);
+				if (ProjectedPos > AMinMax.X && ProjectedPos < AMinMax.Y)
+				{
+					// If this is the fist edge we are testing, add all overlapping verts to the array
+					if (ae == 0)
+					{
+						OverlappingVerts.push_back(BVert);
+					}			
+				}
+				// If this vert is not overlapping this edge, make sure it is removed from the OverlappingVerts
+				// For a vert to be overlapping up must be inside every edge.
+				else
+				{
+					auto it = OverlappingVerts.begin();
+					while (it != OverlappingVerts.end())
+					{
+						if (*it == BVert)
+						{
+							it = OverlappingVerts.erase(it);
+						}
+						else
+						{
+							++it;
+						}
+					}
+				}
+			}
+
+			// Cache the resolution if it is smaller than the current
+			if (OverlapAmount < fabs(OutResolution.Length()))
+			{
+				OutResolution = EdgeNormal * (OverlapAmount * ADirection);
+			}
 		}
+	}
+
+	// If only 1 point is overlapping, have this shape use the resolve found
+	// TODO: This is kinda weird and probably not scalable
+	if (OverlappingVerts.size() == 1)
+	{
+		bUseOtherResolve = false;
 	}
 
 	return bOverlapping;

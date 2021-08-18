@@ -8,7 +8,7 @@ class Object2D;
 class MovementComponent2D : public IComponent
 {
 public:
-	MovementComponent2D(Object* InParent);
+	MovementComponent2D(Object* InParent, const int Player = 0);
 
 	void Update(double DeltaTime);
 	void Render() {}

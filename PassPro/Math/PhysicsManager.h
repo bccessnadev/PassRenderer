@@ -54,7 +54,7 @@ private:
 
 	/* Uses Separated Axis Theorem to test two convex shapes against each other */
 	void TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, PhysicsComponent2D* ObjectB);
-	bool SAT_CollisionTestHelper(const std::vector<Vector2> AVerts, const std::vector<Vector2> BVerts, Vector2& OutResolution);
+	bool SAT_CollisionTestHelper(const std::vector<Vector2> AVerts, const std::vector<Vector2> BVerts, Vector2& OutResolution, bool& bUseOtherResolve);
 	void SAT_ProjectionHelper(const std::vector<Vector2> Verts, const Vector2 Normal, Vector2& OutMinMax);
 
 	void ApplyResolution(PhysicsComponent2D* Object, Vector2 Resolution);

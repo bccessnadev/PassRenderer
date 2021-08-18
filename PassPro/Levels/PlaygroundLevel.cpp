@@ -11,7 +11,7 @@ void PlaygroundLevel::InitializeLevel()
     SquareObject = new Object2D(Vector2(), 0.f, Vector2(5.f, 5.f), "Player");
     PhysicsComponent2D* PhysicsComponent = new PhysicsComponent2D(SquareObject, new BoxCollider2D(SquareObject));
     PhysicsComponent->bDebugDraw = true;
-    PhysicsComponent->Mass = 1.f;
+    PhysicsComponent->Mass = 0.f;
     SquareObject->AddComponent(PhysicsComponent);
     MovementComponent2D* MovementComponent = new MovementComponent2D(SquareObject);
     MovementComponent->Friction = 3.f;
@@ -23,6 +23,7 @@ void PlaygroundLevel::InitializeLevel()
     PhysicsComponentB->bDebugDraw = true;
     PhysicsComponentB->Mass = 2.f;
     PhysicsDummy->AddComponent(PhysicsComponentB);
+    PhysicsDummy->AddComponent(new MovementComponent2D(PhysicsDummy, 1));
     Objects->AddObject(PhysicsDummy);
 }
 
