@@ -10,7 +10,7 @@
 
 using namespace std;
 
-PhysicsComponent2D::PhysicsComponent2D(Object* Parent, ICollider* Collision) : IComponent(Parent), Collider(Collision)
+PhysicsComponent2D::PhysicsComponent2D(Object* Parent, ICollider2D* Collision) : IComponent(Parent), Collider(Collision)
 {
 	Parent2D = static_cast<Object2D*>(Parent);
 
@@ -36,14 +36,14 @@ void PhysicsComponent2D::Update(double DeltaTime)
 		{
 			for (int f = 0; f < ForcesToApply.size(); f++)
 			{
-				Velocity += ForcesToApply[f] * (Mass > 0.f ? (1.f / Mass) : 1.f) * DeltaTime;
+				Velocity += ForcesToApply[f] * (Mass > 0.f ? (1.f / Mass) : 1.f) * static_cast<float>(DeltaTime);
 			}
 
 			ForcesToApply.clear();
 		}
 
 		// Move the parent's transform based on the velocity
-		Parent2D->Transform.TranslateGlobal(Velocity * DeltaTime);
+		Parent2D->Transform.TranslateGlobal(Velocity * static_cast<float>(DeltaTime));
 	}
 }
 

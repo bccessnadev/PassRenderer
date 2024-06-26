@@ -5,13 +5,23 @@
 
 using namespace std;
 
-AABBCollider::AABBCollider(Object2D* RootObject, Vector2 ColliderSize) : ICollider(RootObject)
+Transform2D ICollider2D::GetTransform() const
+{
+	if (Root)
+	{
+		return Root->Transform;
+	}
+
+	return Transform2D();
+}
+
+AABBCollider2D::AABBCollider2D(Object2D* RootObject, Vector2 ColliderSize) : ICollider2D(RootObject)
 {
 	Extent = ColliderSize * 0.5f;
 
 	if (Root)
 	{
-		Extent *= RootObject->Transform.GetScale();
+		Extent *= GetTransform().GetScale();
 	}
 }
 
@@ -22,7 +32,7 @@ std::vector<Vector2> ConvexCollider2D::GetWorldSpaceVerticies() const
 
 	for (int v = 0; v < Verticies.size(); v++)
 	{
-		WorldSpaceVerts[v] = Root->Transform.GetMatrix() * Verticies[v];
+		WorldSpaceVerts[v] = GetTransform().GetMatrix() * Verticies[v];
 	}
 
 	return WorldSpaceVerts;
@@ -66,15 +76,15 @@ void PhysicsManager::Update(double DeltaTime)
 	}
 }
 
-void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, PhysicsComponent2D* ObjectB)
+void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, PhysicsComponent2D* ObjectB) const
 {
 	if (!ObjectA || !ObjectB)
 	{
 		return;
 	}
 
-	ConvexCollider2D* ColliderA = static_cast<ConvexCollider2D*>(ObjectA->Collider);
-	ConvexCollider2D* ColliderB = static_cast<ConvexCollider2D*>(ObjectB->Collider);
+	ConvexCollider2D* ColliderA = static_cast<ConvexCollider2D*>(ObjectA->GetCollider());
+	ConvexCollider2D* ColliderB = static_cast<ConvexCollider2D*>(ObjectB->GetCollider());
 
 	if (ColliderA && ColliderB)
 	{
@@ -107,8 +117,8 @@ void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, Physic
 			// The ratio of the resolution that should be applied to ObjectA
 			float ResolutionAlpha = 1.f;
 			
-			const float AMass = ObjectA->Mass;
-			const float BMass = ObjectB->Mass;
+			const float AMass = ObjectA->GetMass();
+			const float BMass = ObjectB->GetMass();
 
 			// If both objects have the same mass, apply half of the resolve vector to each
 			if (AMass == BMass)
@@ -132,8 +142,8 @@ void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, Physic
 			ApplyResolution(ObjectA, AResolution);
 			ApplyResolution(ObjectB, BResolution);
 
-			const Vector2 APos = ColliderA->Root->Transform.GetPosition();
-			const Vector2 BPos = ColliderB->Root->Transform.GetPosition();
+			const Vector2 APos = ColliderA->GetTransform().GetPosition();
+			const Vector2 BPos = ColliderB->GetTransform().GetPosition();
 			RenderManager::Get()->DrawDebugLine(APos, APos + AResolution, Colors::Blue);
 			RenderManager::Get()->DrawDebugLine(BPos, BPos + BResolution, Colors::Blue);
 		}
@@ -151,7 +161,7 @@ void PhysicsManager::TestConvexColliders_SAT(PhysicsComponent2D* ObjectA, Physic
 	}
 }
 
-bool PhysicsManager::SAT_CollisionTestHelper(const vector<Vector2> AVerts, const vector<Vector2> BVerts, Vector2& OutResolution, bool& bUseOtherResolve)
+bool PhysicsManager::SAT_CollisionTestHelper(const vector<Vector2> AVerts, const vector<Vector2> BVerts, Vector2& OutResolution, bool& bUseOtherResolve) const
 {
 	bool bOverlapping = true;
 	OutResolution = Vector2(INFINITY, INFINITY);
@@ -242,7 +252,7 @@ bool PhysicsManager::SAT_CollisionTestHelper(const vector<Vector2> AVerts, const
 	return bOverlapping;
 }
 
-void PhysicsManager::SAT_ProjectionHelper(const std::vector<Vector2> Verts, const Vector2 Normal, Vector2& OutMinMax)
+void PhysicsManager::SAT_ProjectionHelper(const std::vector<Vector2> Verts, const Vector2 Normal, Vector2& OutMinMax) const
 {
 	OutMinMax = Vector2(INFINITY, -INFINITY);
 
@@ -262,18 +272,18 @@ void PhysicsManager::SAT_ProjectionHelper(const std::vector<Vector2> Verts, cons
 	}
 }
 
-void PhysicsManager::ApplyResolution(PhysicsComponent2D* Object, Vector2 Resolution)
+void PhysicsManager::ApplyResolution(PhysicsComponent2D* Object, Vector2 Resolution) const
 {
 	if (Object2D* Parent = Object->GetOwner2D())
 	{
 		Parent->Transform.TranslateGlobal(Resolution);
 
 		// If the resolution opposes the velocity, just set the velocity to 0.0 for now
-		const float ResolutionDotVelocity = Vector2::Dot(Resolution, Object->Velocity);
+		const float ResolutionDotVelocity = Vector2::Dot(Resolution, Object->GetVelocity());
 		if (ResolutionDotVelocity < 0.f)
 		{
-			Vector2 DeltaVelocity = Vector2::Normalize(Resolution) * fabs(ResolutionDotVelocity);
-			Object->Velocity += DeltaVelocity;
+			Vector2 DeltaVelocity = Vector2::Normalize(Resolution) * fabsf(ResolutionDotVelocity);
+			Object->AddVelocity(DeltaVelocity);
 		}
 	}
 }

@@ -172,7 +172,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (InputManager* IM = InputManager::Get())
         {
-            IM->HandleKeyPressed(wParam);
+            IM->HandleKeyPressed((unsigned int)wParam);
         }
         break;
     }
@@ -180,7 +180,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (InputManager* IM = InputManager::Get())
         {
-            IM->HandleKeyReleased(wParam);
+            IM->HandleKeyReleased((unsigned int)wParam);
         }
         break;
     }

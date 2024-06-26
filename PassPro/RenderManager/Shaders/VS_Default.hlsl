@@ -38,7 +38,7 @@ OutputVertex main(InputVertex Input)
 	);
 	
 	// Convert input position from local unit space to world NPC space	
-	float2 WorldPos = mul(Transform, float3(Input.Pos.x, Input.Pos.y, 1));
+	float2 WorldPos = mul(Transform, float3(Input.Pos.x, Input.Pos.y, 1)).xy;
 	WorldPos.x /= HalfNumXUnits;
 	WorldPos.y /= HalfNumYUnits;
 	Output.Pos = float4(WorldPos, 0.f, 1.f);

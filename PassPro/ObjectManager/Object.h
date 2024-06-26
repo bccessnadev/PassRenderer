@@ -7,64 +7,58 @@
 
 class ObjectManager;
 
+/**
+ * The Object class represents an entity within the game engine.
+ *
+ * Each Object has a unique identifier and can be managed by the Entity Manager.
+ * Objects can have components added to them, which define their behavior and attributes.
+ * The class provides functionality to add, remove, find, update, and render components.
+ */
 class Object
 {
+	friend ObjectManager;
+
 public:
-	/* Incremented each time a new object it constructed. Used to give each object a unique identifier */
-	static int CurrentInstanceID;
-
-	/* Unique name of this Object. Can be used to find this object in the Entity Manager. Useful for debugging*/
-	std::string Name = "Object";
-
-	/* Unique number identifier of this object */
-	int InstanceID = 0;
-	int Priority = 0;
-	//Transform Transform;
-	ObjectManager* ObjectManager = nullptr;
-
 	Object();
 	Object(const std::string ObjectName);
 	~Object();
 
+	/** Incremented each time a new object it constructed. Used to give each object a unique identifier */
+	static int CurrentInstanceID;
+
+	/** Unique name of this Object. Can be used to find this object in the Entity Manager */
+	std::string Name = "Object";
+
+	/** Unique number identifier of this object */
+	int InstanceID = 0;
+
+	/** 
+	* Determines update order of the object relative to other objects.
+	* 
+	* Objects are udpate by heighest priorety number to lowest.
+	*/
+	int Priority = 0;
+
+	/** @return Is this object active and being udpated and rendered */
 	inline bool IsActive() { return bIsActive; }
 
-	/*****************************************************************
-								 SETTERS
-	*****************************************************************/
-
+	/** Stop or start updating and rendering this object */
 	inline void SetIsActive(bool NewIsActive) { bIsActive = NewIsActive; }
 
-	/******************************************************************
-		AddComponent()
-		Adds the component passed in to the GameObjects component
-			collection
-
-		IN:
-					Component -		The Component to add to the
-										collection
-
-	******************************************************************/
+	/**
+	 * Adds the component passed in to the GameObject's component collection.
+	 *
+	 * @param component The Component to add to the collection.
+	 */
 	void AddComponent(IComponent* component);
 
-	/******************************************************************
-		FindComponent()
-		Returns the first component of that type in the GameObjects
-			collection. Returns a nullptr if there is no component
-			of that type
-
-		IN:
-					ComponentType -		The type of component to look
-											for
-
-	******************************************************************/
-	//IComponent* FindComponent(ComponentType::Type type);
-
-	/******************************************************************
-		FindComponent()
-		Returns the first component of the template class in the GameObjects
-			collection. Returns a nullptr if there is no component
-			of that type
-	******************************************************************/
+	/**
+	 * Returns the first component of the template class in the GameObject's collection.
+	 * Returns a nullptr if there is no component of that type.
+	 *
+	 * @tparam T The type of component to find.
+	 * @return The first component of the specified type, or nullptr if not found.
+	 */
 	template<typename T>
 	T FindComponent()
 	{
@@ -75,58 +69,80 @@ public:
 				return ComponentOfType;
 			}
 		}
+
+		return nullptr;
 	}
 
-	/******************************************************************
-		GetComponentsOfType()
-		Returns all components of that type in the GameObjects
-			collection. Returns a empty vector if there are no
-			components of that type.
-
-		IN:
-					ComponentType -		The type of component to look
-											for
-
-	******************************************************************/
-	//std::vector<IComponent*> GetComponentsOfType(ComponentType::Type type);
-
-
-	/******************************************************************
-		GetAllComponents()
-		Returns the collection of components the GameObject has
-	******************************************************************/
+	/**
+	 * Returns the collection of components the Object has.
+	 *
+	 * @return A vector containing all components of the Object.
+	 */
 	std::vector<IComponent*> GetAllComponents();
 
-
-	/******************************************************************
-		Update()
-		Updates all of the components in the GameObject
-	******************************************************************/
+	/**
+	 * Updates all of the active components in the Object.
+	 *
+	 * @param DeltaTime The time elapsed since the last update.
+	 */
 	void Update(double DeltaTime);
 
-	/******************************************************************
-		Render()
-		Renders all of the components in the GameObject
-	******************************************************************/
+	/** Renders all of the components in the Object. */
 	void Render();
 
-	/******************************************************************
-		RemoveComponent()
-		Removes a component from the GameObject
-	******************************************************************/
+	/**
+	 * Removes a component from the Object.
+	 *
+	 * @param ComponentToRemove The component to remove.
+	 */
 	void RemoveComponent(IComponent* ComponentToRemove);
 
-private:
-	std::vector<IComponent*> Components;
-	bool bIsActive = true;
+	/** @return Object manager that updates this object */
+	ObjectManager* GetObjectManager() { return ObjectManager; }
 
+protected:
+	/** Reference to ObjectManager that updates this object */
+	ObjectManager* ObjectManager = nullptr;
+
+private:
+	/** Components on this object to be updated and rendered */
+	std::vector<IComponent*> Components;
+
+	/** Whether this object is being udpated and rendered */
+	bool bIsActive = true;
 };
 
+/**
+ * The Object2D class represents a 2D object within the game engine.
+ *
+ * It inherits from the Object class and includes a 2D transform
+ * that defines its position, rotation, and scale in 2D space.
+ */
 class Object2D : public Object
 {
 public:
+	/** Default constructor. Initializes a 2D object with default values. */
 	Object2D() {}
+
+	/**
+    * Constructor to initialize a 2D object with specified position, rotation, and scale.
+    *
+    * @param Position The position of the object in 2D space.
+    * @param RotationInRads The rotation of the object in radians.
+    * @param Scale The scale of the object in 2D space.
+    */
 	Object2D(const Vector2 Position, const float RotationInRads, const Vector2 Scale) : Transform(Position, RotationInRads, Scale) {}
+
+	/**
+	* Constructor to initialize a 2D object with specified position, rotation, scale, and name.
+	*
+	* @param Position The position of the object in 2D space.
+	* @param RotationInRads The rotation of the object in radians.
+	* @param Scale The scale of the object in 2D space.
+	* @param ObjectName The name of the object.
+	*/
 	Object2D(const Vector2 Position, const float RotationInRads, const Vector2 Scale, const std::string ObjectName) : Object(ObjectName), Transform(Position, RotationInRads, Scale) {}
+
+	/** The 2D transform of the object, defining its position, rotation, and scale in 2D space. */
 	Transform2D Transform;
 };

@@ -10,20 +10,22 @@ void PlaygroundLevel::InitializeLevel()
 {
     SquareObject = new Object2D(Vector2(), 0.f, Vector2(5.f, 5.f), "Player");
     PhysicsComponent2D* PhysicsComponent = new PhysicsComponent2D(SquareObject, new BoxCollider2D(SquareObject));
-    PhysicsComponent->bDebugDraw = true;
-    PhysicsComponent->Mass = 0.f;
+    PhysicsComponent->SetDebugDraw(true);
+    PhysicsComponent->SetMass(0.0f);
     SquareObject->AddComponent(PhysicsComponent);
     MovementComponent2D* MovementComponent = new MovementComponent2D(SquareObject);
     MovementComponent->Friction = 3.f;
     SquareObject->AddComponent(MovementComponent);
+    SquareObject->Priority = 1;
     Objects->AddObject(SquareObject);
 
     PhysicsDummy = new Object2D(Vector2(0.f,-10.f), 0.f, Vector2(5.f, 5.f), "Dummy");
     PhysicsComponent2D* PhysicsComponentB = new PhysicsComponent2D(PhysicsDummy, new BoxCollider2D(PhysicsDummy));
-    PhysicsComponentB->bDebugDraw = true;
-    PhysicsComponentB->Mass = 2.f;
+    PhysicsComponentB->SetDebugDraw(true);
+    PhysicsComponentB->SetMass(2.f);
     PhysicsDummy->AddComponent(PhysicsComponentB);
     PhysicsDummy->AddComponent(new MovementComponent2D(PhysicsDummy, 1));
+    PhysicsDummy->Priority = 2;
     Objects->AddObject(PhysicsDummy);
 }
 

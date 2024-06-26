@@ -56,38 +56,38 @@ void MovementComponent2D::Update(double DeltaTime)
 		if (ForwardInput != 0.f || RightInput != 0.f)
 		{
 			Vector2 DeltaVelocity = Vector2(
-				RightInput * MovementSpeed * DeltaTime,
-				ForwardInput * MovementSpeed * DeltaTime);
+				RightInput * MovementSpeed * static_cast<float>(DeltaTime),
+				ForwardInput * MovementSpeed * static_cast<float>(DeltaTime));
 			
-			if (Vector2::Length(PhysicsComponent->Velocity + DeltaVelocity) > MaxSpeed)
+			if (Vector2::Length(PhysicsComponent->GetVelocity() + DeltaVelocity) > MaxSpeed)
 			{
 				const float CurrentSpeed = PhysicsComponent->GetSpeed();
-				const Vector2 TargetDir = Vector2::Normalize(PhysicsComponent->Velocity + DeltaVelocity);
+				const Vector2 TargetDir = Vector2::Normalize(PhysicsComponent->GetVelocity() + DeltaVelocity);
 				const Vector2 TargetVelocity = TargetDir * MaxSpeed;
-				DeltaVelocity = TargetVelocity - PhysicsComponent->Velocity;
+				DeltaVelocity = TargetVelocity - PhysicsComponent->GetVelocity();
 			}
 
-			PhysicsComponent->Velocity += DeltaVelocity;
+			PhysicsComponent->AddVelocity(DeltaVelocity);
 			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (DeltaVelocity * 10.f), Colors::Yellow);
 		}
 
-		Owner->Transform.RotateLocal(CounterClockwiseInput * RoationSpeed * DeltaTime * (3.14159265359 / 180.f));
+		Owner->Transform.RotateLocal(RotationInput * RotationSpeed * static_cast<float>(DeltaTime) * (3.14159265359f / 180.f));
 
 		if (PhysicsComponent->GetSpeed() > DBL_EPSILON)
 		{
 			const Vector2 FrictionAlpha = Vector2(RightInput == 0.f ? 1.f : 0.f, ForwardInput == 0.f ? 1.f : 0.f);
 
-			const Vector2 FrictionDirection = -Vector2::Normalize(PhysicsComponent->Velocity);
+			const Vector2 FrictionDirection = -Vector2::Normalize(PhysicsComponent->GetVelocity());
 			const Vector2 FrictionForce = FrictionAlpha * FrictionDirection * Friction;
 
 			// Make sure we don't add enough friction to switch it's direction
-			if (PhysicsComponent->GetSpeed() - Vector2::Length(FrictionForce * DeltaTime) > 0.f)
+			if (PhysicsComponent->GetSpeed() - Vector2::Length(FrictionForce * static_cast<float>(DeltaTime)) > 0.f)
 			{
 				PhysicsComponent->AddForce(FrictionForce);
 			}
 			else
 			{
-				PhysicsComponent->Velocity = Vector2(0.f, 0.f);
+				PhysicsComponent->SetVelocity(Vector2(0.f, 0.f));
 			}
 
 			RenderManager::Get()->DrawDebugLine(Owner->Transform.GetPosition(), Owner->Transform.GetPosition() + (FrictionForce * 0.1f), Colors::Red);
@@ -95,9 +95,9 @@ void MovementComponent2D::Update(double DeltaTime)
 	}
 	else
 	{
-		Owner->Transform.TranslateGlobal(Vector2(0.f, 1.f) * ForwardInput * MovementSpeed * DeltaTime);
-		Owner->Transform.TranslateGlobal(Vector2(1.f, 0.f) * RightInput * MovementSpeed * DeltaTime);
-		Owner->Transform.RotateLocal(CounterClockwiseInput * RoationSpeed * DeltaTime * (3.14159265359 / 180.f));
+		Owner->Transform.TranslateGlobal(Vector2(0.f, 1.f) * ForwardInput * MovementSpeed * static_cast<float>(DeltaTime));
+		Owner->Transform.TranslateGlobal(Vector2(1.f, 0.f) * RightInput * MovementSpeed * static_cast<float>(DeltaTime));
+		Owner->Transform.RotateLocal(-RotationInput * RotationSpeed * static_cast<float>(DeltaTime) * (3.14159265359f / 180.f));
 	}
 }
 
@@ -143,20 +143,20 @@ void MovementComponent2D::StopMoveRight()
 
 void MovementComponent2D::RotateClockwise()
 {
-	CounterClockwiseInput = -1.f;
+	RotationInput = -1.f;
 }
 
 void MovementComponent2D::StopRotateClockwise()
 {
-	CounterClockwiseInput = CounterClockwiseInput >= 0.f ? 0.f : 1.f;
+	RotationInput = RotationInput >= 0.f ? 0.f : 1.f;
 }
 
 void MovementComponent2D::RotateCounterClockwise()
 {
-	CounterClockwiseInput = 1.f;
+	RotationInput = 1.f;
 }
 
 void MovementComponent2D::StopRotateCounterClockwise()
 {
-	CounterClockwiseInput = CounterClockwiseInput >= 0.f ? 0.f : -1.f;
+	RotationInput = RotationInput >= 0.f ? 0.f : -1.f;
 }

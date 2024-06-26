@@ -17,22 +17,6 @@ Object* ObjectManager::FindObjectByName(const char* name)
 		return nullptr;
 }
 
-//std::vector<Object*> ObjectManager::FindObjectsWithComponent(ComponentType::Type Type)
-//{
-//	vector<Object*> objectsWithComponent;
-//
-//	for (auto& Object : Objects)
-//	{
-//		Object* object = Object.second;
-//		vector<Component*> componentsOfType = object->GetComponentsOfType(type);
-//
-//		if (!componentsOfType.empty())
-//			objectsWithComponent.push_back(object);
-//	}
-//
-//	return objectsWithComponent;
-//}
-
 void ObjectManager::AddObject(Object* Object)
 {
 	AddObject(Object, Object->Name.c_str());
@@ -62,7 +46,7 @@ void ObjectManager::AddObject(Object* NewObject, const char* InName)
 	NewObject->Name = Name;
 	Objects.insert(pair<string, Object*>(Name, NewObject));
 	PriorityObjects.push_back(NewObject);
-	sort(PriorityObjects.begin(), PriorityObjects.end(), [&](Object* lhs, Object* rhs) {return lhs->Priority < rhs->Priority; });
+	sort(PriorityObjects.begin(), PriorityObjects.end(), [&](Object* lhs, Object* rhs) {return lhs->Priority > rhs->Priority; });
 }
 
 void ObjectManager::DestroyObject(const char* name)

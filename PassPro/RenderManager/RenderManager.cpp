@@ -61,8 +61,8 @@ RenderManager::RenderManager(HWND hWnd)
 	}
 
 	// View Port
-	DxViewport.Width = (float)DxSwapChainDes.BufferDesc.Width;
-	DxViewport.Height = (float)DxSwapChainDes.BufferDesc.Height;
+	DxViewport.Width = static_cast<float>(DxSwapChainDes.BufferDesc.Width);
+	DxViewport.Height = static_cast<float>(DxSwapChainDes.BufferDesc.Height);
 	DxViewport.TopLeftX = DxViewport.TopLeftY = 0;
 	DxViewport.MinDepth = 0;
 	DxViewport.MaxDepth = 1;
@@ -183,7 +183,7 @@ void RenderManager::RenderMesh(RMesh* Mesh, const Transform2D& MeshTransform)
 	DxDeviceContext->PSSetShader(Mesh->PixelShader->Shader, 0, 0);
 
 	// Draw
-	DxDeviceContext->Draw(Mesh->Verticies.size(), 0);
+	DxDeviceContext->Draw((UINT)Mesh->Verticies.size(), 0);
 }
 
 void RenderManager::DrawDebugLine(const Vector2& PointA, const Vector2& PointB, const Vector4& Color)
@@ -215,19 +215,24 @@ void RenderManager::DrawDebugRectangle(const Transform2D& Transform, const Vecto
 
 void RenderManager::RenderDebugLines()
 {
+	// Define the input layout
 	DxDeviceContext->IASetInputLayout(DebugInputLayout);
 
+	// Specify how points should be drawn. In this case we are send a list of lines
 	DxDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
+	// Update the vertext buffer with all of the debug lines set this frame
 	DxDeviceContext->UpdateSubresource(DebugVertexBuffer, 0, NULL, DebugLineVerts.data(), 0, 0);
 
 	UINT Strides[] = { sizeof(DebugVertex2D) };
 	UINT Offsets[] = { 0 };
 	DxDeviceContext->IASetVertexBuffers(0, 1, &DebugVertexBuffer, Strides, Offsets);
 
+	// Use the debug shaders
 	DxDeviceContext->VSSetShader(Debug2DVertexShader, nullptr, 0);
 	DxDeviceContext->PSSetShader(Debug2DPixelShader, nullptr, 0);
 
+	// Draw to the all of the verts to the render target
 	DxDeviceContext->Draw((UINT)DebugVertCount, 0);
 
 	// Clear the drawn lines

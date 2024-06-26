@@ -33,35 +33,6 @@ void Object::AddComponent(IComponent* Component)
 	}
 }
 
-//IComponent* Object::FindComponent(ComponentType::Type Type)
-//{
-//	IComponent* Component = nullptr;
-//
-//	for (int c = 0; c < Components.size(); c++)
-//	{
-//		if (Components[c]->GetComponentType() == Type)
-//		{
-//			Component = Components[c];
-//			break;
-//		}
-//	}
-//
-//	return Component;
-//}
-
-//std::vector<IComponent*> Object::GetComponentsOfType(ComponentType::Type Type)
-//{
-//	vector<Component*> ComponentsFound;
-//
-//	for (int c = 0; this && c < Components.size(); c++)
-//	{
-//		if (Components[c]->GetComponentType() == Type)
-//			ComponentsFound.push_back(components[c]);
-//	}
-//
-//	return ComponentsFound;
-//}
-
 std::vector<IComponent*> Object::GetAllComponents()
 {
 	return Components;

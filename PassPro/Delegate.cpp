@@ -28,6 +28,9 @@ void Delegate::Broadcast()
 {
 	for (IDelegateCallback* Callback : CallbackArray)
 	{
-		(*Callback)();
+		if (Callback)
+		{
+			(*Callback)();
+		}
 	}
 }

@@ -40,7 +40,7 @@ struct Vector2
 
 	inline Vector2 Rotate(const float AngleInRadians) const { return Vector2((X * cosf(AngleInRadians)) - (Y * sinf(AngleInRadians)), (X * sinf(AngleInRadians)) + (Y * cosf(AngleInRadians))); }
 
-	inline static Vector2 GetAbs(const Vector2 Vector) { return Vector2(fabs(Vector.X), fabs(Vector.Y)); }
+	inline static Vector2 GetAbs(const Vector2 Vector) { return Vector2(fabsf(Vector.X), fabsf(Vector.Y)); }
 
 	Vector2 Normalize();
 	static Vector2 Normalize(Vector2 Vector);

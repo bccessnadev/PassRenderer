@@ -11,10 +11,6 @@ CRenderingComponent::~CRenderingComponent()
 	delete Mesh;
 }
 
-void CRenderingComponent::Update(double DeltaTime)
-{
-}
-
 void CRenderingComponent::Render()
 {
 	if (Object2D* Owner = static_cast<Object2D*>(GetOwner()))

@@ -74,7 +74,7 @@ void RMesh::ConstructVertexBuffer()
 		ZeroMemory(&BufferDesc, sizeof(BufferDesc));
 		ZeroMemory(&SubData, sizeof(SubData));
 		BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		BufferDesc.ByteWidth = sizeof(Vertex2D) * Verticies.size();
+		BufferDesc.ByteWidth = (UINT)sizeof(Vertex2D) * (UINT)Verticies.size();
 		BufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
 		SubData.pSysMem = Verticies.data();
